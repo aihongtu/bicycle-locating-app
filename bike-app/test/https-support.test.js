@@ -17,7 +17,10 @@ test('server.js 同时支持 HTTP 与 HTTPS（自签名证书）', () => {
   ok(src.includes('HTTPS_PORT'), '应支持 HTTPS_PORT 环境变量');
 });
 
-test('cert 证书文件存在（供 HTTPS 启动）', () => {
+test('HTTPS 私钥使用本地忽略文件（避免提交）', () => {
   ok(fs.existsSync(path.join(__dirname, '..', 'certs', 'cert.pem')), 'cert.pem 应存在');
-  ok(fs.existsSync(path.join(__dirname, '..', 'certs', 'key.pem')), 'key.pem 应存在');
+  const server = fs.readFileSync(SERVER, 'utf8');
+  ok(server.includes("'key.local.pem'"), 'server.js 应读取本地 key.local.pem');
+  const gitignore = fs.readFileSync(path.join(__dirname, '..', '..', '.gitignore'), 'utf8');
+  ok(gitignore.includes('/bike-app/certs/key.local.pem'), '私钥文件应被 Git 忽略');
 });

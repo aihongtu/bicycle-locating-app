@@ -105,3 +105,7 @@ node server.js
 ## 安全提示
 
 高德凭据应只放在被忽略的 `bike-app/js/amap-config.local.js`；HTTPS 私钥使用被忽略的 `bike-app/certs/key.local.pem`，证书文件为 `bike-app/certs/cert.pem`。`.ppt-work/` 和 `ppt-output/` 也已加入忽略规则，避免提交含个人信息的演示文稿及处理中间文件。若凭据曾经推送到远程仓库，应在服务控制台撤销或轮换，并清理 Git 历史；仅删除当前文件不能移除历史版本中的凭据。高德 Key 还应限制允许访问的来源域名。
+
+## 许可证
+
+除另有说明的第三方组件、商标和素材外，本项目原创代码与原创素材采用 [PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0)。该许可仅允许非商业目的使用；商业用途需另行取得版权方授权。公开仓库仍可被查看和下载，许可证用于明确可授权的使用范围。完整条款见 [LICENSE.md](LICENSE.md)。
