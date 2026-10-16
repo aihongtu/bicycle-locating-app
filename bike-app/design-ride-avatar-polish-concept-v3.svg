@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1000" viewBox="0 0 1120 1000" role="img" aria-labelledby="title desc">
+  <title id="title">骑行数据与角色档案头像概念稿 V3</title>
+  <desc id="desc">展示四项对齐的骑行数据和三男三女六款更精致的原创角色档案头像。仅为设计提案，未替换应用。</desc>
+  <defs>
+    <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#e9ece8"/><stop offset="1" stop-color="#dfe5df"/></linearGradient>
+    <linearGradient id="panel" x2="1" y2="1"><stop stop-color="#fff" stop-opacity=".97"/><stop offset=".55" stop-color="#f5f7f1"/><stop offset="1" stop-color="#e9eee9"/></linearGradient>
+    <linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0dc"/><stop offset=".65" stop-color="#e6c9ac"/><stop offset="1" stop-color="#c99f83"/></linearGradient>
+    <linearGradient id="coat" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#45534c"/><stop offset="1" stop-color="#202927"/></linearGradient>
+    <linearGradient id="hair" x1="0" y1="0" x2="1" y2="1"><stop stop-color="var(--hair-hi)"/><stop offset=".55" stop-color="var(--hair)"/><stop offset="1" stop-color="var(--hair-shadow)"/></linearGradient>
+    <filter id="shadow" x="-.15" y="-.2" width="1.3" height="1.5"><feDropShadow dx="0" dy="9" stdDeviation="12" flood-color="#202727" flood-opacity=".11"/></filter>
+    <clipPath id="portraitClip"><path d="M-54-64h108v111l-11 12h-97z"/></clipPath>
+    <g id="portraitBase">
+      <path d="M-53 57q5-39 53-39t53 39v11h-106z" fill="url(#coat)"/>
+      <path d="M-28 36l28 17 28-17-9-16h-38z" fill="#d9dfd4"/>
+      <path d="M-13 12h26v25h-26z" fill="url(#skin)"/>
+      <path d="M-28-21q0-31 28-31t28 31v20q-4 24-28 27-24-3-28-27z" fill="url(#skin)"/>
+      <path d="M-20-5q7 4 13 0m14 0q6 4 13 0" fill="none" stroke="#48514a" stroke-width="2.1" stroke-linecap="round"/>
+      <path d="M0-3l-3 12 5 1" fill="none" stroke="#bd8f73" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M-7 18q7 5 14 0" fill="none" stroke="#9b6758" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M-10 38L0 49 10 38M0 49v17" fill="none" stroke="#9ca99f" stroke-width="2"/>
+      <path d="M-43 63l13-25 16 9L0 69l14-22 16-9 13 25" fill="none" stroke="#90b919" stroke-width="2" opacity=".9"/>
+      <path d="M-26-24q4-33 29-33 27 0 28 31-7-7-11-18-19 16-46 17z" fill="url(#hair)"/>
+      <path d="M-27-23q-8 12-4 32m57-32q8 12 4 32" fill="none" stroke="var(--hair-shadow)" stroke-width="7" stroke-linecap="round"/>
+      <path d="M-18-44q14-9 29-7" fill="none" stroke="var(--hair-hi)" stroke-width="2.4" opacity=".85" stroke-linecap="round"/>
+      <path d="M-47 60h94" stroke="#e8eee6" stroke-width="1" opacity=".25"/>
+      <circle cx="24" cy="33" r="3" fill="#d6ad48"/><path d="M23 33h-5" stroke="#d6ad48" stroke-width="1"/>
+    </g>
+  </defs>
+  <rect width="1120" height="1000" fill="url(#bg)"/>
+  <text x="64" y="66" fill="#75817a" font-family="Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="3">P09 FIELD GLASS / CHARACTER PASS 03</text>
+  <text x="64" y="112" fill="#202727" font-family="'Noto Serif SC','Microsoft YaHei',serif" font-size="29" font-weight="600">骑行数据与头像 · 角色档案肖像提案</text>
+  <path d="M64 132h992" stroke="#aab7b0"/>
+  <g filter="url(#shadow)">
+    <rect x="64" y="164" width="992" height="300" rx="8" fill="url(#panel)" stroke="#c5d0cc" stroke-width="1.5"/>
+    <rect x="64" y="164" width="992" height="4" rx="2" fill="#90b919"/>
+    <text x="92" y="205" fill="#6d7976" font-family="Arial,sans-serif" font-size="10" font-weight="700" letter-spacing="2">TODAY'S RIDE / METRICS</text>
+    <text x="1028" y="205" text-anchor="end" fill="#87918b" font-family="Arial,sans-serif" font-size="9" letter-spacing="1.4">FOUR COLUMN GRID · LOCKED BASELINE</text>
+    <path d="M312 227v205M560 227v205M808 227v205" stroke="#d3dbd6" stroke-width="1.5"/>
+    <g font-family="Arial,sans-serif" text-anchor="middle">
+      <text x="188" y="265" fill="#6d7976" font-size="10" font-weight="700" letter-spacing="1">DISTANCE</text><text x="188" y="327" fill="#202727" font-family="Georgia,serif" font-size="39" font-weight="600">12.8</text><text x="188" y="353" fill="#748f1c" font-size="11" font-weight="700">km</text><text x="188" y="401" fill="#77837c" font-size="10">累计里程</text>
+      <text x="436" y="265" fill="#6d7976" font-size="10" font-weight="700" letter-spacing="1">DURATION</text><text x="436" y="327" fill="#202727" font-family="Georgia,serif" font-size="39" font-weight="600">48</text><text x="436" y="353" fill="#748f1c" font-size="11" font-weight="700">min</text><text x="436" y="401" fill="#77837c" font-size="10">骑行时长</text>
+      <text x="684" y="265" fill="#6d7976" font-size="10" font-weight="700" letter-spacing="1">AVG. SPEED</text><text x="684" y="327" fill="#202727" font-family="Georgia,serif" font-size="39" font-weight="600">0</text><text x="684" y="353" fill="#748f1c" font-size="11" font-weight="700">km/h</text><text x="684" y="401" fill="#77837c" font-size="10">平均速度</text>
+      <text x="932" y="265" fill="#6d7976" font-size="10" font-weight="700" letter-spacing="1">ENERGY</text><text x="932" y="327" fill="#202727" font-family="Georgia,serif" font-size="39" font-weight="600">286</text><text x="932" y="353" fill="#748f1c" font-size="11" font-weight="700">kcal</text><text x="932" y="401" fill="#77837c" font-size="10">消耗热量</text>
+    </g>
+    <text x="92" y="440" fill="#87918b" font-family="sans-serif" font-size="9">数字共用同一基线；单位独立成行，0 km/h 不再挤压或偏移其他指标。</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="64" y="500" width="992" height="420" rx="8" fill="url(#panel)" stroke="#c5d0cc" stroke-width="1.5"/><rect x="64" y="500" width="992" height="4" rx="2" fill="#159eae"/>
+    <text x="92" y="541" fill="#6d7976" font-family="Arial,sans-serif" font-size="10" font-weight="700" letter-spacing="2">RIDER DOSSIER / AVATAR SET</text>
+    <text x="92" y="572" fill="#202727" font-family="'Noto Serif SC','Microsoft YaHei',serif" font-size="19" font-weight="600">六款原创角色档案头像 · 三男三女</text>
+    <text x="1028" y="558" text-anchor="end" fill="#748f1c" font-family="Arial,sans-serif" font-size="9" font-weight="700" letter-spacing="1.3">FIELD PORTRAITS / P09</text>
+
+    <!-- Each portrait is a layered original vector dossier illustration, not a letter or emoji. -->
+    <g transform="translate(166 690)" style="--hair:#343d39;--hair-hi:#7b8379;--hair-shadow:#202725">
+      <path d="M-67-72h134v133l-11 11h-123z" fill="#d9e1dc" stroke="#90b919" stroke-width="2"/><path d="M-57-62h114v113l-8 8h-106z" fill="#b7c6bd"/>
+      <g clip-path="url(#portraitClip)"><path d="M-56-66h112v130H-56z" fill="#bdc9c2"/><path d="M-54 35l26-77h38l45 77v31H-54z" fill="#d7dfd7" opacity=".34"/><use href="#portraitBase"/><path d="M-25-26q-3 11-2 24" fill="none" stroke="#202725" stroke-width="5"/><path d="M-31 38l-13 29m75-29 13 29" stroke="#728078" stroke-width="4"/></g>
+      <path d="M-58-60h17M41-60h17M-58 55h17M41 55h17" stroke="#f4f6f1" stroke-width="2" opacity=".85"/><path d="M-55 47h20" stroke="#90b919" stroke-width="3"/>
+    </g>
+    <g transform="translate(324 690)" style="--hair:#718078;--hair-hi:#c6d0c7;--hair-shadow:#45534c">
+      <path d="M-67-72h134v133l-11 11h-123z" fill="#d9e1dc" stroke="#b8c4bc" stroke-width="2"/><path d="M-57-62h114v113l-8 8h-106z" fill="#c0d2cc"/>
+      <g clip-path="url(#portraitClip)"><path d="M-56-66h112v130H-56z" fill="#bfd0c9"/><path d="M-54 35l26-77h38l45 77v31H-54z" fill="#eaf0ea" opacity=".35"/><use href="#portraitBase"/><path d="M-27-27q-14 32-4 66m57-66q14 32 4 66" fill="none" stroke="#718078" stroke-width="8"/><path d="M-28-40q10-18 31-16 24 3 26 30-10-8-13-20-20 17-43 14z" fill="url(#hair)"/><path d="M-16-45q17-9 28-5" fill="none" stroke="#e4ebe4" stroke-width="2"/></g>
+      <path d="M-58-60h17M41-60h17M-58 55h17M41 55h17" stroke="#f4f6f1" stroke-width="2" opacity=".85"/>
+    </g>
+    <g transform="translate(482 690)" style="--hair:#9a704f;--hair-hi:#d1ac7f;--hair-shadow:#654d3b">
+      <path d="M-67-72h134v133l-11 11h-123z" fill="#e6dbc9" stroke="#b8c4bc" stroke-width="2"/><path d="M-57-62h114v113l-8 8h-106z" fill="#d9cbb4"/>
+      <g clip-path="url(#portraitClip)"><path d="M-56-66h112v130H-56z" fill="#d7c8af"/><path d="M-54 35l26-77h38l45 77v31H-54z" fill="#fff1dc" opacity=".28"/><use href="#portraitBase"/><path d="M-30-24q-6 19-1 40" fill="none" stroke="#654d3b" stroke-width="6"/><path d="M-29-38q8-21 32-21 22 1 27 25-11-5-16-17-17 15-43 13z" fill="url(#hair)"/><path d="M12-37l12-7" stroke="#e0bf55" stroke-width="2"/><circle cx="-31" cy="-13" r="5" fill="#d8bc68" stroke="#6d6654" stroke-width="1.5"/></g>
+      <path d="M-58-60h17M41-60h17M-58 55h17M41 55h17" stroke="#fff9ed" stroke-width="2" opacity=".85"/>
+    </g>
+    <g transform="translate(640 690)" style="--hair:#d1d8d0;--hair-hi:#fffdf0;--hair-shadow:#8b9a91">
+      <path d="M-67-72h134v133l-11 11h-123z" fill="#dbe4e1" stroke="#b8c4bc" stroke-width="2"/><path d="M-57-62h114v113l-8 8h-106z" fill="#b9cbc5"/>
+      <g clip-path="url(#portraitClip)"><path d="M-56-66h112v130H-56z" fill="#b7cbc4"/><path d="M-54 35l26-77h38l45 77v31H-54z" fill="#f0f5ee" opacity=".34"/><use href="#portraitBase"/><path d="M-27-22q-12 35-3 62m57-62q12 35 3 62" fill="none" stroke="#d1d8d0" stroke-width="8"/><path d="M-29-42q9-18 31-18 22 2 26 26-10-7-15-19-17 14-42 11z" fill="url(#hair)"/><path d="M-12-48q15-8 26-5" fill="none" stroke="#fffdf0" stroke-width="2"/><path d="M29-16h11v21H29" fill="none" stroke="#90b919" stroke-width="2"/></g>
+      <path d="M-58-60h17M41-60h17M-58 55h17M41 55h17" stroke="#f4f6f1" stroke-width="2" opacity=".85"/>
+    </g>
+    <g transform="translate(798 690)" style="--hair:#566254;--hair-hi:#9aa181;--hair-shadow:#303b34">
+      <path d="M-67-72h134v133l-11 11h-123z" fill="#dfe8c8" stroke="#90b919" stroke-width="2"/><path d="M-57-62h114v113l-8 8h-106z" fill="#cbd6b2"/>
+      <g clip-path="url(#portraitClip)"><path d="M-56-66h112v130H-56z" fill="#cad5b5"/><path d="M-54 35l26-77h38l45 77v31H-54z" fill="#f0f3da" opacity=".32"/><use href="#portraitBase"/><path d="M-28-28q-6 23-2 43" fill="none" stroke="#303b34" stroke-width="6"/><path d="M-27-42q9-19 30-19 22 2 28 23-12-3-18-15-17 13-40 11z" fill="url(#hair)"/><path d="M15-29l17-9" stroke="#90b919" stroke-width="3"/><circle cx="-31" cy="-12" r="5" fill="#d4bd86" stroke="#4d594d" stroke-width="1.5"/></g>
+      <path d="M-58-60h17M41-60h17M-58 55h17M41 55h17" stroke="#f4f6e6" stroke-width="2" opacity=".85"/><path d="M-55 47h20" stroke="#90b919" stroke-width="3"/>
+    </g>
+    <g transform="translate(956 690)" style="--hair:#8c6662;--hair-hi:#c69b8d;--hair-shadow:#59474a">
+      <path d="M-67-72h134v133l-11 11h-123z" fill="#eadeda" stroke="#b8c4bc" stroke-width="2"/><path d="M-57-62h114v113l-8 8h-106z" fill="#d7c3bf"/>
+      <g clip-path="url(#portraitClip)"><path d="M-56-66h112v130H-56z" fill="#d5c2bd"/><path d="M-54 35l26-77h38l45 77v31H-54z" fill="#fbede1" opacity=".3"/><use href="#portraitBase"/><path d="M-28-25q-10 28-5 54m59-54q10 28 5 54" fill="none" stroke="#8c6662" stroke-width="8"/><path d="M-29-42q9-18 31-18 23 1 27 27-11-7-17-19-17 15-41 12z" fill="url(#hair)"/><path d="M-13-47q15-9 27-5" fill="none" stroke="#dab0a1" stroke-width="2"/><path d="M30-15h9v20h-9" fill="none" stroke="#d8bb69" stroke-width="2"/></g>
+      <path d="M-58-60h17M41-60h17M-58 55h17M41 55h17" stroke="#fff8f2" stroke-width="2" opacity=".85"/>
+    </g>
+
+    <g text-anchor="middle" fill="#303a36" font-family="'Microsoft YaHei',sans-serif" font-size="10" font-weight="700">
+      <text x="166" y="782">01 / 男 · 林</text><text x="324" y="782">02 / 女 · 岚</text><text x="482" y="782">03 / 男 · 砾</text><text x="640" y="782">04 / 女 · 白</text><text x="798" y="782">05 / 男 · 青</text><text x="956" y="782">06 / 女 · 夕</text>
+    </g>
+    <path d="M92 816h936" stroke="#d2dad5"/>
+    <text x="92" y="847" fill="#6d7976" font-family="sans-serif" font-size="10">改为带明暗层次、发丝高光、服装结构与个人识别配件的角色档案肖像；不再使用字母或 emoji。</text>
+    <text x="92" y="872" fill="#87918b" font-family="sans-serif" font-size="9">头像为原创矢量概念；仅供评审，头像选择与上传功能未改动。</text>
+  </g>
+  <text x="560" y="958" text-anchor="middle" fill="#75817a" font-family="Arial,sans-serif" font-size="10" font-weight="700" letter-spacing="2">PROPOSAL ONLY · WAITING FOR APPROVAL</text>
+</svg>

@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1000" viewBox="0 0 1120 1000" role="img" aria-labelledby="title desc">
+  <title id="title">骑行数据与男女头像优化概念稿</title>
+  <desc id="desc">以 P09 原色板重排四项骑行指标，并以三男三女、统一画框的矢量人物肖像替代纯色字母头像。</desc>
+  <defs>
+    <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#e9ece8"/><stop offset="1" stop-color="#dfe5df"/></linearGradient>
+    <linearGradient id="panel" x2="1" y2="1"><stop stop-color="#fff" stop-opacity=".96"/><stop offset=".55" stop-color="#f5f7f1"/><stop offset="1" stop-color="#e9eee9"/></linearGradient>
+    <linearGradient id="dark" x2="1"><stop stop-color="#202727"/><stop offset="1" stop-color="#303a36"/></linearGradient>
+    <filter id="shadow" x="-.15" y="-.2" width="1.3" height="1.5"><feDropShadow dx="0" dy="9" stdDeviation="12" flood-color="#202727" flood-opacity=".11"/></filter>
+    <clipPath id="c1"><circle cx="0" cy="0" r="43"/></clipPath>
+  </defs>
+  <rect width="1120" height="1000" fill="url(#bg)"/>
+  <text x="64" y="66" fill="#75817a" font-family="Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="3">P09 FIELD GLASS / DETAIL PASS 02</text>
+  <text x="64" y="112" fill="#202727" font-family="'Noto Serif SC','Microsoft YaHei',serif" font-size="29" font-weight="600">骑行数据与头像 · 视觉优化提案</text>
+  <path d="M64 132h992" stroke="#aab7b0"/>
+
+  <!-- Ride metrics: fixed four-column grid, equal number baselines, units on a shared second line. -->
+  <g filter="url(#shadow)">
+    <rect x="64" y="164" width="992" height="300" rx="8" fill="url(#panel)" stroke="#c5d0cc" stroke-width="1.5"/>
+    <rect x="64" y="164" width="992" height="4" rx="2" fill="#90b919"/>
+    <text x="92" y="205" fill="#6d7976" font-family="Arial,sans-serif" font-size="10" font-weight="700" letter-spacing="2">TODAY'S RIDE / METRICS</text>
+    <text x="1028" y="205" text-anchor="end" fill="#87918b" font-family="Arial,sans-serif" font-size="9" letter-spacing="1.4">FOUR COLUMN GRID · LOCKED BASELINE</text>
+    <path d="M312 227v205M560 227v205M808 227v205" stroke="#d3dbd6" stroke-width="1.5"/>
+    <g font-family="Arial,sans-serif" text-anchor="middle">
+      <text x="188" y="265" fill="#6d7976" font-size="10" font-weight="700" letter-spacing="1">DISTANCE</text>
+      <text x="188" y="327" fill="#202727" font-family="Georgia,serif" font-size="39" font-weight="600" font-variant-numeric="tabular-nums">12.8</text>
+      <text x="188" y="353" fill="#748f1c" font-size="11" font-weight="700" letter-spacing="1.1">km</text>
+      <text x="188" y="401" fill="#77837c" font-size="10">累计里程</text>
+
+      <text x="436" y="265" fill="#6d7976" font-size="10" font-weight="700" letter-spacing="1">DURATION</text>
+      <text x="436" y="327" fill="#202727" font-family="Georgia,serif" font-size="39" font-weight="600" font-variant-numeric="tabular-nums">48</text>
+      <text x="436" y="353" fill="#748f1c" font-size="11" font-weight="700" letter-spacing="1.1">min</text>
+      <text x="436" y="401" fill="#77837c" font-size="10">骑行时长</text>
+
+      <text x="684" y="265" fill="#6d7976" font-size="10" font-weight="700" letter-spacing="1">AVG. SPEED</text>
+      <text x="684" y="327" fill="#202727" font-family="Georgia,serif" font-size="39" font-weight="600" font-variant-numeric="tabular-nums">0</text>
+      <text x="684" y="353" fill="#748f1c" font-size="11" font-weight="700" letter-spacing="1.1">km/h</text>
+      <text x="684" y="401" fill="#77837c" font-size="10">平均速度</text>
+
+      <text x="932" y="265" fill="#6d7976" font-size="10" font-weight="700" letter-spacing="1">ENERGY</text>
+      <text x="932" y="327" fill="#202727" font-family="Georgia,serif" font-size="39" font-weight="600" font-variant-numeric="tabular-nums">286</text>
+      <text x="932" y="353" fill="#748f1c" font-size="11" font-weight="700" letter-spacing="1.1">kcal</text>
+      <text x="932" y="401" fill="#77837c" font-size="10">消耗热量</text>
+    </g>
+    <text x="92" y="440" fill="#87918b" font-family="sans-serif" font-size="9">数字共用同一基线；单位独立成行，0 km/h 不再挤压或偏移其他指标。</text>
+  </g>
+
+  <!-- Rider portrait selection: three male and three female original silhouettes. -->
+  <g filter="url(#shadow)">
+    <rect x="64" y="500" width="992" height="420" rx="8" fill="url(#panel)" stroke="#c5d0cc" stroke-width="1.5"/>
+    <rect x="64" y="500" width="992" height="4" rx="2" fill="#159eae"/>
+    <text x="92" y="541" fill="#6d7976" font-family="Arial,sans-serif" font-size="10" font-weight="700" letter-spacing="2">RIDER DOSSIER / AVATAR SET</text>
+    <text x="92" y="572" fill="#202727" font-family="'Noto Serif SC','Microsoft YaHei',serif" font-size="19" font-weight="600">内置头像 · 三男三女六款肖像</text>
+    <text x="1028" y="558" text-anchor="end" fill="#748f1c" font-family="Arial,sans-serif" font-size="9" font-weight="700" letter-spacing="1.3">P09 MUTED PALETTE</text>
+
+    <!-- Avatar 01 -->
+    <g transform="translate(166 696)">
+      <circle r="51" fill="#e2edc3" stroke="#90b919" stroke-width="2"/><circle r="45" fill="#d3dfcb"/>
+      <g clip-path="url(#c1)"><path d="M-38 53q5-31 38-31t38 31v10h-76z" fill="#303a36"/><path d="M-17 19h34v18h-34z" fill="#d6c6ad"/><ellipse cy="-5" rx="21" ry="27" fill="#e2d4c0"/><path d="M-23-8q-2-28 24-32 27 3 24 31l-8-8-5-9q-16 11-34 10z" fill="#343d39"/><path d="M-21 2l-2 11m44-11 2 11" fill="none" stroke="#343d39" stroke-width="5"/><path d="M-9 2h4m10 0h4" stroke="#202727" stroke-width="2"/><path d="M4-11h13" stroke="#90b919" stroke-width="3"/><path d="M-26 29l10 8m42-8L16 37" stroke="#90b919" stroke-width="2"/></g>
+      <circle r="56" fill="none" stroke="#90b919" stroke-width="2"/>
+    </g>
+    <!-- Avatar 02 -->
+    <g transform="translate(324 696)">
+      <circle r="51" fill="#d8e0db" stroke="#c5d0cc" stroke-width="2"/><circle r="45" fill="#c3d6d0"/>
+      <g clip-path="url(#c1)"><path d="M-37 53q5-36 37-36t37 36" fill="#26312d"/><path d="M-16 19h32v18h-32z" fill="#d7c8b5"/><ellipse cy="-5" rx="20" ry="27" fill="#eadfce"/><path d="M-24-5q-5-31 18-37 29-4 31 26l-9-5-6-12q-17 17-34 12z" fill="#74837a"/><path d="M-19 4q0 24-12 36m50-36q0 24 12 36" fill="none" stroke="#74837a" stroke-width="8"/><path d="M-10 2h4m11 0h4" stroke="#202727" stroke-width="2"/><path d="M-21-20q10-4 18-12" stroke="#90b919" stroke-width="3"/></g>
+      <circle r="56" fill="none" stroke="#b4c1ba" stroke-width="2"/>
+    </g>
+    <!-- Avatar 03 -->
+    <g transform="translate(482 696)">
+      <circle r="51" fill="#e8ddc9" stroke="#c5d0cc" stroke-width="2"/><circle r="45" fill="#e2d1b4"/>
+      <g clip-path="url(#c1)"><path d="M-38 53q5-31 38-31t38 31v10h-76z" fill="#59675e"/><path d="M-16 19h32v18h-32z" fill="#c9a985"/><ellipse cy="-5" rx="20" ry="27" fill="#ecd8bc"/><path d="M-23-6q-3-26 15-33 27-6 34 18l-8-2-8-9q-15 11-32 9z" fill="#a98157"/><path d="M-21 1l-2 12m44-12 2 12" fill="none" stroke="#a98157" stroke-width="5"/><path d="M-10 2h4m11 0h4" stroke="#202727" stroke-width="2"/><path d="M-5 17q5 3 10 0" fill="none" stroke="#9d6950" stroke-width="1.5"/><path d="M-27 29l10 8m44-8L17 37" stroke="#d4bd86" stroke-width="2"/></g>
+      <circle r="56" fill="none" stroke="#c5d0cc" stroke-width="2"/>
+    </g>
+    <!-- Avatar 04 -->
+    <g transform="translate(640 696)">
+      <circle r="51" fill="#dbe4e1" stroke="#c5d0cc" stroke-width="2"/><circle r="45" fill="#bcd0ca"/>
+      <g clip-path="url(#c1)"><path d="M-37 53q5-36 37-36t37 36" fill="#202727"/><path d="M-15 19h30v18h-30z" fill="#ddcbb2"/><ellipse cy="-5" rx="20" ry="27" fill="#ead9c2"/><path d="M-24-7q-1-34 24-35 27 0 25 35l-7-12-8-8q-14 16-33 18z" fill="#d5d9cc"/><path d="M-20 4q0 24-12 37m51-37q0 24 12 37" fill="none" stroke="#d5d9cc" stroke-width="8"/><path d="M-10 2h4m11 0h4" stroke="#202727" stroke-width="2"/><path d="M-5 17q5 3 10 0" fill="none" stroke="#9d6950" stroke-width="1.5"/></g>
+      <circle r="56" fill="none" stroke="#b9c8c1" stroke-width="2"/>
+    </g>
+    <!-- Avatar 05 -->
+    <g transform="translate(798 696)">
+      <circle r="51" fill="#e2edc3" stroke="#c5d0cc" stroke-width="2"/><circle r="45" fill="#d7dfc1"/>
+      <g clip-path="url(#c1)"><path d="M-38 53q5-31 38-31t38 31v10h-76z" fill="#4a5149"/><path d="M-16 19h32v18h-32z" fill="#cda987"/><ellipse cy="-5" rx="20" ry="27" fill="#ead8c2"/><path d="M-23-7q-3-27 17-34 24-5 33 18l-8-1-7-8q-17 12-35 10z" fill="#5d685c"/><path d="M-21 1l-2 12m44-12 2 12" fill="none" stroke="#5d685c" stroke-width="5"/><path d="M-10 2h4m11 0h4" stroke="#202727" stroke-width="2"/><path d="M12-22l10-8" fill="none" stroke="#90b919" stroke-width="3"/><path d="M-27 29l10 8m44-8L17 37" stroke="#90b919" stroke-width="2"/></g>
+      <circle r="56" fill="none" stroke="#90b919" stroke-width="2"/>
+    </g>
+    <!-- Avatar 06 -->
+    <g transform="translate(956 696)">
+      <circle r="51" fill="#e6d8d3" stroke="#c5d0cc" stroke-width="2"/><circle r="45" fill="#d9c8c1"/>
+      <g clip-path="url(#c1)"><path d="M-37 53q5-36 37-36t37 36" fill="#303a36"/><path d="M-16 19h32v18h-32z" fill="#dfc9ae"/><ellipse cy="-5" rx="20" ry="27" fill="#efdfca"/><path d="M-23-4q-4-30 17-36 29-4 33 23l-10-4-8-10q-14 17-32 16z" fill="#956f69"/><path d="M-20 5q-2 23-12 36m50-36q2 23 12 36" fill="none" stroke="#956f69" stroke-width="8"/><path d="M-10 2h4m11 0h4" stroke="#202727" stroke-width="2"/><path d="M-7 18q7 4 14 0" fill="none" stroke="#9d6950" stroke-width="1.5"/></g>
+      <circle r="56" fill="none" stroke="#c5d0cc" stroke-width="2"/>
+    </g>
+
+    <text x="166" y="786" text-anchor="middle" fill="#303a36" font-family="sans-serif" font-size="10" font-weight="700">01 / 男 · 林</text>
+    <text x="324" y="786" text-anchor="middle" fill="#303a36" font-family="sans-serif" font-size="10" font-weight="700">02 / 女 · 岚</text>
+    <text x="482" y="786" text-anchor="middle" fill="#303a36" font-family="sans-serif" font-size="10" font-weight="700">03 / 男 · 砾</text>
+    <text x="640" y="786" text-anchor="middle" fill="#303a36" font-family="sans-serif" font-size="10" font-weight="700">04 / 女 · 白</text>
+    <text x="798" y="786" text-anchor="middle" fill="#303a36" font-family="sans-serif" font-size="10" font-weight="700">05 / 男 · 青</text>
+    <text x="956" y="786" text-anchor="middle" fill="#303a36" font-family="sans-serif" font-size="10" font-weight="700">06 / 女 · 夕</text>
+    <path d="M92 824h936" stroke="#d2dad5"/>
+    <text x="92" y="854" fill="#6d7976" font-family="sans-serif" font-size="10">三款短发、利落轮廓的男士头像与三款长发女士头像；统一陶瓷色调，选中项以 P09 荧光绿环标记。</text>
+    <text x="92" y="878" fill="#87918b" font-family="sans-serif" font-size="9">概念人物为原创示意图，头像上传与选择功能保持原样。</text>
+  </g>
+  <text x="560" y="958" text-anchor="middle" fill="#75817a" font-family="Arial,sans-serif" font-size="10" font-weight="700" letter-spacing="2">PROPOSAL ONLY · WAITING FOR APPROVAL</text>
+</svg>

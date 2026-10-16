@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="1050" viewBox="0 0 1100 1050" role="img" aria-labelledby="title desc">
+  <title id="title">车辆管理弹窗优化概念稿</title>
+  <desc id="desc">P09 野外光学记录仪风格。将当前车辆信息、断开与删除操作、查找设备、手动添加分为清晰区域。</desc>
+  <defs>
+    <linearGradient id="backdrop" x2="0" y2="1"><stop stop-color="#dfe5df"/><stop offset="1" stop-color="#cbd4ce"/></linearGradient>
+    <linearGradient id="glass" x2="1" y2="1"><stop stop-color="#fff" stop-opacity=".97"/><stop offset=".54" stop-color="#f6f8f3" stop-opacity=".98"/><stop offset="1" stop-color="#e8ede8" stop-opacity=".98"/></linearGradient>
+    <linearGradient id="instrument" x2="1"><stop stop-color="#202727"/><stop offset=".72" stop-color="#303a36"/><stop offset="1" stop-color="#23403d"/></linearGradient>
+    <linearGradient id="lime" x2="1"><stop stop-color="#a7ce35"/><stop offset="1" stop-color="#86a91d"/></linearGradient>
+    <filter id="shadow" x="-.2" y="-.2" width="1.4" height="1.5"><feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#202727" flood-opacity=".24"/></filter>
+    <filter id="blur"><feGaussianBlur stdDeviation="5"/></filter>
+  </defs>
+  <rect width="1100" height="1050" fill="url(#backdrop)"/>
+  <!-- Softly muted app beneath the modal -->
+  <g opacity=".48" filter="url(#blur)">
+    <rect x="310" y="45" width="480" height="960" rx="38" fill="#e9ece8" stroke="#27302d" stroke-width="12"/>
+    <rect x="322" y="76" width="456" height="88" fill="url(#instrument)"/>
+    <text x="348" y="111" fill="#b8c5bd" font-family="Arial,sans-serif" font-size="12" letter-spacing="3">DAYLIGHT MAP DESK / 01</text>
+    <text x="348" y="145" fill="#f3f5f0" font-family="sans-serif" font-size="26">找车　/　LOCATE</text>
+    <rect x="340" y="192" width="420" height="600" rx="8" fill="#d8e0db"/>
+    <path d="M350 380 755 270M390 210 520 785M350 640 760 500M570 205 760 780" stroke="#f8faf5" stroke-width="20"/>
+    <path d="M400 650Q510 590 585 510T700 400" fill="none" stroke="#90b919" stroke-width="6"/>
+    <rect x="340" y="810" width="420" height="100" rx="8" fill="#f9faf7"/>
+    <rect x="322" y="922" width="456" height="70" fill="#f9faf7"/>
+  </g>
+  <rect width="1100" height="1050" fill="#17201d" opacity=".42"/>
+  <!-- Proposed clean vehicle-management modal -->
+  <g filter="url(#shadow)">
+    <rect x="238" y="168" width="624" height="714" rx="10" fill="url(#glass)" stroke="#a9b8b0" stroke-width="2"/>
+    <path d="M250 170h600" stroke="#fff" stroke-width="2" opacity=".95"/>
+    <rect x="238" y="168" width="624" height="112" rx="10" fill="url(#instrument)"/>
+    <path d="M250 175h600" stroke="#fff" opacity=".38"/>
+    <path d="M238 278h624" stroke="#90b919" stroke-width="3"/>
+    <text x="274" y="205" fill="#bfc9c3" font-family="Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="2.5">VEHICLE DOSSIER / 01</text>
+    <text x="274" y="247" fill="#f3f5f0" font-family="'Noto Serif SC','Microsoft YaHei',serif" font-size="28" font-weight="600">车辆管理</text>
+    <rect x="743" y="198" width="42" height="42" rx="6" fill="#ffffff" fill-opacity=".08" stroke="#8ea097"/>
+    <path d="m757 212 14 14m0-14-14 14" stroke="#e8eee9" stroke-width="2" stroke-linecap="round"/>
+    <text x="798" y="225" fill="#bfc9c3" font-family="Arial,sans-serif" font-size="9" font-weight="700" letter-spacing="1.5">CLOSE</text>
+
+    <text x="274" y="321" fill="#6d7976" font-family="Arial,sans-serif" font-size="10" font-weight="700" letter-spacing="1.8">当前车辆　/　CURRENT VEHICLE</text>
+    <rect x="269" y="340" width="562" height="181" rx="7" fill="#fff" fill-opacity=".8" stroke="#c5d0cc" stroke-width="2"/>
+    <path d="M270 349v163" stroke="#90b919" stroke-width="4"/>
+    <rect x="291" y="362" width="70" height="70" rx="5" fill="#202727"/>
+    <circle cx="310" cy="402" r="10" fill="none" stroke="#b7d94a" stroke-width="2"/>
+    <circle cx="342" cy="402" r="10" fill="none" stroke="#b7d94a" stroke-width="2"/>
+    <path d="m310 402 10-22 11 22h-21m10-22h10m4-5h10" fill="none" stroke="#b7d94a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="722" y="363" width="88" height="26" rx="4" fill="#e2edc3" stroke="#c5d0cc"/>
+    <circle cx="737" cy="376" r="4" fill="#748f1c"/>
+    <text x="749" y="380" fill="#536a18" font-family="sans-serif" font-size="11" font-weight="700">当前使用</text>
+    <text x="382" y="381" fill="#6d7976" font-family="Arial,sans-serif" font-size="9" font-weight="700" letter-spacing="1.3">BIKE / 001</text>
+    <text x="382" y="411" fill="#202727" font-family="'Microsoft YaHei',sans-serif" font-size="20" font-weight="700">我的通勤车</text>
+    <circle cx="389" cy="444" r="4" fill="#90b919"/>
+    <text x="402" y="448" fill="#5e7c10" font-family="sans-serif" font-size="12" font-weight="700">在线</text>
+    <text x="443" y="448" fill="#6d7976" font-family="sans-serif" font-size="11">· 蓝牙已连接</text>
+    <path d="M291 466h519" stroke="#d5ddd8"/>
+    <text x="292" y="494" fill="#6d7976" font-family="sans-serif" font-size="10">设备状态</text>
+    <text x="803" y="494" text-anchor="end" fill="#202727" font-family="sans-serif" font-size="11" font-weight="700">已连接</text>
+
+    <text x="274" y="562" fill="#6d7976" font-family="Arial,sans-serif" font-size="10" font-weight="700" letter-spacing="1.8">设备操作　/　DEVICE ACTIONS</text>
+    <rect x="269" y="580" width="270" height="48" rx="4" fill="url(#instrument)" stroke="#202727" stroke-width="2"/>
+    <path d="M293 596v16m8-16v16" stroke="#d9f477" stroke-width="2" stroke-linecap="round"/>
+    <text x="316" y="610" fill="#e7f3b9" font-family="sans-serif" font-size="13" font-weight="700">断开蓝牙</text>
+    <rect x="550" y="580" width="281" height="48" rx="4" fill="#f9faf7" stroke="#c5d0cc" stroke-width="2"/>
+    <path d="M574 595v17m-8-8.5h16" stroke="#b6534b" stroke-width="2" stroke-linecap="round"/>
+    <text x="598" y="610" fill="#a34d45" font-family="sans-serif" font-size="13" font-weight="700">删除车辆</text>
+
+    <path d="M270 658h560" stroke="#c5d0cc" stroke-width="2"/>
+    <text x="274" y="691" fill="#6d7976" font-family="Arial,sans-serif" font-size="10" font-weight="700" letter-spacing="1.8">连接或添加　/　CONNECT OR REGISTER</text>
+    <text x="274" y="726" fill="#202727" font-family="sans-serif" font-size="12" font-weight="700">车辆名称</text>
+    <text x="827" y="726" text-anchor="end" fill="#87918b" font-family="sans-serif" font-size="10">可选</text>
+    <rect x="269" y="739" width="562" height="48" rx="4" fill="#f9faf7" stroke="#b8c5bd" stroke-width="2"/>
+    <text x="286" y="769" fill="#9aa59e" font-family="sans-serif" font-size="12">为手动添加的车辆命名</text>
+    <rect x="269" y="805" width="276" height="48" rx="4" fill="#f9faf7" stroke="#c5d0cc" stroke-width="2"/>
+    <circle cx="296" cy="829" r="10" fill="none" stroke="#53645b" stroke-width="1.7" stroke-dasharray="2 2"/>
+    <path d="M296 823v6l4 2" fill="none" stroke="#53645b" stroke-width="1.7" stroke-linecap="round"/>
+    <text x="317" y="834" fill="#303a36" font-family="sans-serif" font-size="12" font-weight="700">寻找并连接设备</text>
+    <rect x="556" y="805" width="275" height="48" rx="4" fill="url(#lime)" stroke="#718c1d" stroke-width="2"/>
+    <path d="M583 820v18m-9-9h18" stroke="#202727" stroke-width="2" stroke-linecap="round"/>
+    <text x="605" y="834" fill="#202727" font-family="sans-serif" font-size="12" font-weight="800">添加车辆</text>
+  </g>
+  <text x="550" y="944" text-anchor="middle" fill="#f5f7f3" font-family="Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="2">P09 FIELD GLASS · VEHICLE MANAGEMENT CONCEPT</text>
+  <text x="550" y="972" text-anchor="middle" fill="#e2e8e3" font-family="sans-serif" font-size="12">层级：当前车辆　→　设备操作　→　连接 / 手动添加</text>
+</svg>

@@ -1,0 +1,20 @@
+# 系统/编辑器临时文件
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.log
+*.bak
+*-backup.*
+
+# 忽略本地 IDE 配置
+.vscode/
+.idea/
+
+# 本机生成的演示文稿工作文件和含个人信息的交付稿
+/.ppt-work/
+/ppt-output/
+
+# 本机密钥配置：不要提交高德凭据或 HTTPS 私钥
+/bike-app/js/amap-config.local.js
+/bike-app/certs/key.local.pem
+/bike-app/project.private.config.json

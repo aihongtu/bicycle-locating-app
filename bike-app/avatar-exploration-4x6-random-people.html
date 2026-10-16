@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>P09 · 四套随机人物头像</title>
+<style>
+:root{--ink:#202727;--ink2:#303a36;--muted:#75817a;--line:#cbd4ce;--lime:#90b919;--limeBright:#b7d94a;--teal:#159eae;--paper:#f7f9f4;--bg:#e6e9e5;--shadow:0 12px 30px #20272714}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,"Microsoft YaHei",sans-serif}.wrap{max-width:1320px;margin:auto;padding:25px 26px 38px}.head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:16px}.eyebrow{font-size:10px;font-weight:800;letter-spacing:2.4px;color:var(--muted)}h1{font-size:26px;letter-spacing:-.7px;margin:8px 0 0}.intro{font-size:10px;color:var(--muted);text-align:right;line-height:1.75}.edition{display:grid;grid-template-columns:198px 1fr;gap:13px;background:linear-gradient(135deg,#fbfcf9f5,#f0f3edeb);border:1px solid var(--line);border-radius:10px;padding:14px 16px 12px;margin:11px 0;box-shadow:var(--shadow);position:relative;overflow:hidden}.edition:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}.meta{padding:3px 9px 0 5px;border-right:1px solid #d8ded9}.code{font:800 8px Arial,sans-serif;letter-spacing:1.3px;color:var(--accent)}.meta h2{font-size:15px;margin:7px 0 5px}.meta p{font-size:9px;line-height:1.55;color:#68766f;margin:0}.seed{margin-top:8px;font:700 8px Arial,sans-serif;color:#87918b;line-height:1.6}.grid{display:grid;grid-template-columns:repeat(6,minmax(82px,1fr));gap:7px;align-items:start}.person{min-width:0;text-align:center;padding:2px 1px 4px;transition:transform .18s ease}.person:hover{transform:translateY(-3px)}.avatar{--ring:2px;--glass:.3;--accent:var(--lime);--radius:50%;position:relative;width:72px;height:72px;margin:0 auto 6px;border-radius:var(--radius);padding:4px;background:linear-gradient(145deg,#202727,#45534c);box-shadow:0 4px 12px #20272720;transition:box-shadow .22s,filter .22s}.avatar:before{content:"";position:absolute;inset:1px;border-radius:inherit;border:var(--ring) solid color-mix(in srgb,var(--accent) 85%,white);opacity:.92;z-index:2;pointer-events:none}.avatar:after{content:"";position:absolute;inset:5px;border-radius:inherit;background:linear-gradient(145deg,#fff var(--glass),transparent 51%),repeating-linear-gradient(135deg,transparent 0 8px,#fff00008 8px 9px);mix-blend-mode:screen;z-index:2;pointer-events:none}.person:hover .avatar{box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent),0 6px 15px #2027272b;filter:brightness(1.05)}.portrait{display:block;width:100%;height:100%;border-radius:inherit;overflow:hidden;background:var(--avatar-bg);border:1px solid #ffffff8c}.portrait svg{width:100%;height:100%;display:block}.name{font-size:9px;font-weight:800;color:var(--ink2);white-space:nowrap}.detail{font-size:7px;color:#849088;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.spec{grid-column:2;color:#77837c;font:8px Arial,sans-serif;letter-spacing:.1px;margin-top:6px;padding-top:7px;border-top:1px solid #dce2dd}.v1{--accent:#90b919}.v2{--accent:#159eae}.v3{--accent:#6d7976}.v4{--accent:#9ab82e}.v1 .avatar{--glass:.33;--ring:2px;--accent:#b7d94a}.v1 .person:nth-child(odd) .portrait{border-radius:48% 47% 50% 46%}.v2 .avatar{--glass:.32;--ring:3px;--accent:#46c3ce}.v2 .avatar:before{inset:1px;border-style:dashed}.v2 .portrait{border-radius:48% 43% 49% 44%}.v3 .avatar{--glass:.19;--ring:2px;--accent:#90b919;background:linear-gradient(145deg,#303a36,#69736d);filter:saturate(.82)}.v3 .portrait{filter:saturate(.82)}.v4 .avatar{--glass:.45;--ring:2px;--accent:#b7d94a}.v4 .avatar:after{background:linear-gradient(115deg,#fff8 0 12%,transparent 34% 75%,#b7d94a22 100%)}.motion{display:flex;gap:7px;align-items:center;font-size:9px;color:#738078;margin:12px 2px}.motion i{width:5px;height:5px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 3px #90b91922}.foot{font:8px Arial,sans-serif;color:#8a948d;margin:8px 2px}@media(max-width:920px){.edition{grid-template-columns:1fr}.meta{border-right:0;border-bottom:1px solid #d8ded9;padding-bottom:8px}.grid{grid-template-columns:repeat(6,minmax(58px,1fr))}.spec{grid-column:1}.intro{text-align:left}.head{align-items:start;flex-direction:column;gap:7px}}@media(max-width:600px){.wrap{padding:17px 10px}.grid{grid-template-columns:repeat(3,1fr);row-gap:12px}.edition{padding:13px 10px}.intro{max-width:360px}}
+</style>
+</head>
+<body><main class="wrap">
+  <header class="head"><div><div class="eyebrow">P09 AVATAR LAB / RANDOMIZED PEOPLE 06</div><h1>四套头像方向 · 每套六个随机人物</h1></div><div class="intro">人物本身也参与随机生成：脸型、肤色、发型、发色、服装和配件均各自变化。<br>每套三男三女；继续使用深灰、荧光绿、青绿色与浅色玻璃层次。</div></header>
+  <div id="gallery"></div>
+  <div class="motion"><i></i><span>动态建议：悬停上浮 2–3px；选中环轻柔呼吸；头像不自动旋转。每个头像都有独立人物参数，四套共 24 个不同人物实例。</span></div>
+  <div class="foot">随机种子：3005 · 7876 · 5122 · 1564　/　概念稿，不改应用功能或线上头像。</div>
+</main>
+<script>
+const editions=[
+  {id:'v1',title:'田野玻璃 · 轻光',seed:3005,desc:'最贴近 P09 的雾面绿灰；双层细环、柔和玻璃高光和荧光绿短标。',params:'半径 51 · 双环 · 高光 33% · 细纹理'},
+  {id:'v2',title:'信标切面 · 清晰',seed:7876,desc:'青绿信号环与分段刻度；人物占比更突出，保留轻微切角边缘。',params:'半径 57 · 四段环 · 高光 32% · 坐标纹'},
+  {id:'v3',title:'静默档案 · 克制',seed:5122,desc:'低饱和灰绿与石墨边框，弱化装饰，头像形象更清楚。',params:'半径 47 · 双环 · 高光 19% · 无额外纹理'},
+  {id:'v4',title:'光学脉冲 · 明亮',seed:1564,desc:'荧光绿和青绿仍是视觉主线；加入明亮玻璃反光与更明显选中态。',params:'半径 56 · 三段环 · 高光 45% · 细纹理'}
+];
+const names=[['林','男','巡线骑士'],['岚','女','青叶观察员'],['砾','男','路线记录员'],['白','女','林间领骑员'],['青','男','车辆维护员'],['夕','女','夜骑向导']];
+const skins=['#f4d4b5','#e8c3a1','#d4a17d','#f0cfbc','#bd886b','#e5b99b'];
+const hairs=['#252e2a','#475049','#6f5945','#8d6254','#b7aa8b','#39353b','#7a7c6a'];
+const backdrops=['#d7e2d9','#d6e2df','#e2e1d4','#d4e0e5','#e1e5d8','#ded8d2'];
+const coats=['#303a36','#26332f','#43534a','#35444c','#4a5149','#263c3c'];
+const hairstyles=['crop','side','wave','bob','long','pixie','part'];
+const accessoryNames=['无配件','细框眼镜','耳麦','发夹','骑行镜'];
+function rng(seed){let s=seed>>>0;return()=>{s+=0x6D2B79F5;let t=s;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296}}
+function pick(r,a){return a[Math.floor(r()*a.length)]}
+function hairShape(style,gender,color){
+  const fill=`${color}`;
+  const back=gender==='女'&&['bob','long','wave'].includes(style)?`<path d="M17 32Q12 8 34 7Q57 8 52 34L50 54Q47 61 44 57L43 35 25 34 23 57Q17 57 16 50Z" fill="${fill}"/>`:'';
+  const front={
+    crop:`<path d="M18 30Q16 9 34 8Q52 9 50 29L45 26 42 18Q34 25 20 25Z" fill="${fill}"/>`,
+    side:`<path d="M18 29Q17 8 36 8Q54 10 50 29L44 25Q40 19 39 16 32 24 19 26Z" fill="${fill}"/><path d="M32 12Q26 21 25 30" fill="none" stroke="#ffffff55" stroke-width="1.4"/>`,
+    wave:`<path d="M17 30Q14 9 34 7Q55 8 51 30L47 26Q44 21 43 17Q39 24 34 19 28 27 20 26Z" fill="${fill}"/>`,
+    bob:`<path d="M17 30Q15 8 34 7Q54 8 52 31L50 48Q45 46 45 35L43 19Q33 25 20 25L21 44Q18 47 16 47Z" fill="${fill}"/>`,
+    long:`<path d="M17 30Q14 8 34 7Q54 8 52 30L51 58 46 58 44 34 22 31 21 58 16 58Z" fill="${fill}"/>`,
+    pixie:`<path d="M18 31Q14 12 30 8L28 14 36 8Q51 10 50 29L44 25 41 17Q33 23 20 26Z" fill="${fill}"/>`,
+    part:`<path d="M17 30Q15 8 35 7Q55 9 51 30L46 26 43 17Q34 22 31 17 27 25 19 26Z" fill="${fill}"/>`
+  }[style];
+  return back+front+`<path d="M20 26Q19 33 20 38M48 25Q50 33 48 39" fill="none" stroke="${fill}" stroke-width="2" opacity=".8"/>`;
+}
+function personSvg(person,variant,index){
+  const {skin,hair,style,face,coat,accessory,eye}=person;
+  const faceRx=face==='narrow'?13.2:face==='round'?16:14.5;
+  const faceRy=face==='long'?20:18.2;
+  const bangs=hairShape(style,person.gender,hair);
+  const collar=variant==='v2'?'#46c3ce':variant==='v4'?'#b7d94a':'#90b919';
+  const glasses=accessory==='细框眼镜'?'<g fill="none" stroke="#28322e" stroke-width="1.25"><rect x="22" y="26" width="10" height="7" rx="2"/><rect x="36" y="26" width="10" height="7" rx="2"/><path d="M32 29h4"/></g>':'';
+  const headset=accessory==='耳麦'?'<path d="M18 31Q17 12 34 12Q51 12 50 31M17 29v8h4v-8m27 0v8h-4v-8" fill="none" stroke="#26332f" stroke-width="2"/>':'';
+  const hairpin=accessory==='发夹'?`<path d="M43 18l7 3-4 5-7-3z" fill="${collar}"/>`:'';
+  const visor=accessory==='骑行镜'?'<path d="M21 27q5-4 11 0v6q-6 3-11-1zm15 0q5-4 11 0v5q-6 4-11 1z" fill="#26332f" opacity=".85"/><path d="M32 29h4" stroke="#90b919" stroke-width="1.4"/>':'';
+  return `<svg viewBox="0 0 68 68" aria-hidden="true"><rect width="68" height="68" fill="${person.bg}"/><path d="M3 68Q6 43 34 42Q62 43 65 68Z" fill="${coat}"/><path d="M23 51l11 9 11-9" fill="none" stroke="${collar}" stroke-width="2"/><path d="M28 37h12v12H28z" fill="${skin}"/><path d="M18 27q0-18 16-18t16 18v5q0 17-16 18Q18 49 18 32Z" fill="${skin}"/><path d="M21 36q-4-1-4-6 0-4 4-3m26 9q4-1 4-6 0-4-4-3" fill="${skin}" stroke="#a87961" stroke-width=".7"/><path d="M24 30h5m10 0h5" stroke="${eye}" stroke-width="1.8" stroke-linecap="round"/><path d="M34 31l-1 6 3 1" fill="none" stroke="#b17f68" stroke-width="1.1" stroke-linecap="round"/><path d="M30 41q4 2 8 0" fill="none" stroke="#9e6659" stroke-width="1.4" stroke-linecap="round"/>${bangs}${glasses}${headset}${hairpin}${visor}<path d="M8 17h7M53 50h7" stroke="#ffffff6b" stroke-width="1"/><circle cx="56" cy="12" r="1.5" fill="${collar}"/></svg>`;
+}
+function makePeople(seed){
+  const r=rng(seed);return names.map((n,i)=>{
+    const style=pick(r,hairstyles);const skin=pick(r,skins);const hair=pick(r,hairs);const coat=pick(r,coats);const bg=pick(r,backdrops);const face=pick(r,['narrow','round','oval','long']);
+    let accessory=pick(r,accessoryNames);if(n[1]==='男'&&accessory==='发夹')accessory='细框眼镜';
+    const eye=pick(r,['#27342e','#37483d','#493b32','#385055']);
+    return {name:n[0],gender:n[1],role:n[2],style,skin,hair,coat,bg,face,accessory,eye};
+  });
+}
+const root=document.getElementById('gallery');
+editions.forEach(ed=>{
+  const people=makePeople(ed.seed);
+  const section=document.createElement('section');section.className=`edition ${ed.id}`;section.style.setProperty('--accent',ed.id==='v2'?'#159eae':ed.id==='v3'?'#6d7976':'#90b919');
+  section.innerHTML=`<div class="meta"><div class="code">${ed.id.toUpperCase()} / SEED ${ed.seed}</div><h2>${ed.title}</h2><p>${ed.desc}</p><div class="seed">${ed.params}</div></div><div class="grid">${people.map((p,i)=>`<div class="person"><div class="avatar"><div class="portrait" style="--avatar-bg:${p.bg}">${personSvg(p,ed.id,i)}</div></div><div class="name">${String(i+1).padStart(2,'0')} ${p.name} · ${p.gender}</div><div class="detail">${p.style}发型 · ${p.accessory}</div></div>`).join('')}</div><div class="spec">人物随机项：发型 ${[...new Set(people.map(p=>p.style))].length} 种 · 肤色 ${[...new Set(people.map(p=>p.skin))].length} 种 · 配件 ${[...new Set(people.map(p=>p.accessory))].length} 种 · 每个头像独立生成</div>`;
+  root.appendChild(section);
+});
+</script>
+</body></html>

@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1000" viewBox="0 0 1120 1000" role="img" aria-labelledby="title desc">
+  <title id="title">回归原版轻量风格的头像与数据概念稿</title>
+  <desc id="desc">保留应用轻量圆形头像语言，使用紫、绿、蓝绿、琥珀四色系绘制三男三女头像，并展示对齐的骑行指标。</desc>
+  <defs>
+    <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#e9ece8"/><stop offset="1" stop-color="#dfe5df"/></linearGradient>
+    <linearGradient id="panel" x2="1" y2="1"><stop stop-color="#fff" stop-opacity=".97"/><stop offset="1" stop-color="#edf1eb"/></linearGradient>
+    <filter id="shadow" x="-.15" y="-.2" width="1.3" height="1.5"><feDropShadow dx="0" dy="8" stdDeviation="11" flood-color="#202727" flood-opacity=".1"/></filter>
+    <linearGradient id="gloss" x2="0" y2="1"><stop stop-color="#fff" stop-opacity=".3"/><stop offset=".48" stop-color="#fff" stop-opacity="0"/></linearGradient>
+  </defs>
+  <rect width="1120" height="1000" fill="url(#bg)"/>
+  <text x="64" y="66" fill="#75817a" font-family="Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="3">P09 / ORIGINAL LANGUAGE · COLOR STUDY 04</text>
+  <text x="64" y="112" fill="#202727" font-family="'Microsoft YaHei',sans-serif" font-size="29" font-weight="700">骑行数据与头像 · 回归轻量圆形风格</text>
+  <path d="M64 132h992" stroke="#aab7b0"/>
+
+  <g filter="url(#shadow)">
+    <rect x="64" y="164" width="992" height="270" rx="10" fill="url(#panel)" stroke="#c7d0cb"/>
+    <rect x="64" y="164" width="992" height="4" rx="2" fill="#90b919"/>
+    <text x="92" y="205" fill="#68766f" font-family="Arial,sans-serif" font-size="10" font-weight="700" letter-spacing="2">TODAY'S RIDE / METRICS</text>
+    <text x="1028" y="205" text-anchor="end" fill="#87918b" font-family="Arial,sans-serif" font-size="9" letter-spacing="1.2">FOUR COLUMN GRID · SHARED VALUE BASELINE</text>
+    <path d="M312 226v170M560 226v170M808 226v170" stroke="#d5ddd8"/>
+    <g text-anchor="middle" font-family="Arial,sans-serif">
+      <text x="188" y="257" fill="#77827c" font-size="10" font-weight="700" letter-spacing="1">DISTANCE</text><text x="188" y="317" fill="#202727" font-family="Georgia,serif" font-size="39" font-weight="700">12.8</text><text x="188" y="343" fill="#748f1c" font-size="11" font-weight="700">km</text><text x="188" y="378" fill="#77837c" font-size="10">累计里程</text>
+      <text x="436" y="257" fill="#77827c" font-size="10" font-weight="700" letter-spacing="1">DURATION</text><text x="436" y="317" fill="#202727" font-family="Georgia,serif" font-size="39" font-weight="700">48</text><text x="436" y="343" fill="#748f1c" font-size="11" font-weight="700">min</text><text x="436" y="378" fill="#77837c" font-size="10">骑行时长</text>
+      <text x="684" y="257" fill="#77827c" font-size="10" font-weight="700" letter-spacing="1">AVG. SPEED</text><text x="684" y="317" fill="#202727" font-family="Georgia,serif" font-size="39" font-weight="700">0</text><text x="684" y="343" fill="#748f1c" font-size="11" font-weight="700">km/h</text><text x="684" y="378" fill="#77837c" font-size="10">平均速度</text>
+      <text x="932" y="257" fill="#77827c" font-size="10" font-weight="700" letter-spacing="1">ENERGY</text><text x="932" y="317" fill="#202727" font-family="Georgia,serif" font-size="39" font-weight="700">286</text><text x="932" y="343" fill="#748f1c" font-size="11" font-weight="700">kcal</text><text x="932" y="378" fill="#77837c" font-size="10">消耗热量</text>
+    </g>
+    <text x="92" y="411" fill="#87918b" font-family="sans-serif" font-size="9">数字和单位分两行排布；四列中心、数值基线、标签间距统一。</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="64" y="470" width="992" height="450" rx="10" fill="url(#panel)" stroke="#c7d0cb"/>
+    <rect x="64" y="470" width="992" height="4" rx="2" fill="#159eae"/>
+    <text x="92" y="513" fill="#68766f" font-family="Arial,sans-serif" font-size="10" font-weight="700" letter-spacing="2">RIDER PROFILE / PRESET AVATARS</text>
+    <text x="92" y="550" fill="#202727" font-family="'Microsoft YaHei',sans-serif" font-size="19" font-weight="700">回到原版圆形图标 · 增加男士选择</text>
+    <text x="1028" y="531" text-anchor="end" fill="#748f1c" font-family="Arial,sans-serif" font-size="9" font-weight="700" letter-spacing="1.1">SIMPLE · COLORFUL · EASY TO RECOGNIZE</text>
+
+    <!-- Circular, lightweight icons echo the current app; restrained silhouette details keep them personal. -->
+    <g transform="translate(166 674)"><circle r="66" fill="#7054bd"/><circle r="60" fill="#8067ca"/><path d="M-60-7A60 60 0 0 1 59-16v28A60 60 0 0 0-60 12z" fill="url(#gloss)"/><path d="M-38 53q4-34 38-34t38 34v12h-76z" fill="#303247"/><path d="M-12 20h24v19h-24z" fill="#dbb99e"/><ellipse cy="-4" rx="21" ry="26" fill="#f0d3b8"/><path d="M-22-9q0-29 23-31 23 1 23 27l-8-7-5-9q-14 11-32 9z" fill="#34343e"/><path d="M-18 1h5m25 0h5" stroke="#303247" stroke-width="2.5" stroke-linecap="round"/><path d="M-7 14q7 4 14 0" fill="none" stroke="#a76e62" stroke-width="2" stroke-linecap="round"/><circle r="66" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="2"/><path d="M-47 43h16" stroke="#d7caff" stroke-width="3" stroke-linecap="round"/></g>
+    <g transform="translate(324 674)"><circle r="66" fill="#47a975"/><circle r="60" fill="#58b983"/><path d="M-60-7A60 60 0 0 1 59-16v28A60 60 0 0 0-60 12z" fill="url(#gloss)"/><path d="M-39 53q5-35 39-35t39 35v12h-78z" fill="#263e38"/><path d="M-12 20h24v19h-24z" fill="#e2c5a9"/><ellipse cy="-4" rx="20" ry="26" fill="#f5dcc3"/><path d="M-22-7q-4-28 22-34 26 4 25 32l-9-4-7-12q-14 17-30 18z" fill="#50655a"/><path d="M-18 1h5m24 0h5" stroke="#33463d" stroke-width="2.5" stroke-linecap="round"/><path d="M-7 14q7 4 14 0" fill="none" stroke="#af7568" stroke-width="2" stroke-linecap="round"/><circle r="66" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="2"/><path d="M-47 43h16" stroke="#cef0d8" stroke-width="3" stroke-linecap="round"/></g>
+    <g transform="translate(482 674)"><circle r="66" fill="#3484ad"/><circle r="60" fill="#469ac0"/><path d="M-60-7A60 60 0 0 1 59-16v28A60 60 0 0 0-60 12z" fill="url(#gloss)"/><path d="M-39 53q5-35 39-35t39 35v12h-78z" fill="#26363e"/><path d="M-12 20h24v19h-24z" fill="#d7b79d"/><ellipse cy="-4" rx="20" ry="26" fill="#efd3b6"/><path d="M-22-8q1-27 23-31 23 3 23 29l-8-5-5-9q-14 11-32 9z" fill="#594638"/><path d="M-18 1h5m24 0h5" stroke="#34434a" stroke-width="2.5" stroke-linecap="round"/><path d="M-7 14q7 4 14 0" fill="none" stroke="#a96f61" stroke-width="2" stroke-linecap="round"/><circle r="66" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="2"/><path d="M-47 43h16" stroke="#c9e8f4" stroke-width="3" stroke-linecap="round"/></g>
+    <g transform="translate(640 674)"><circle r="66" fill="#d69a28"/><circle r="60" fill="#e3ae3c"/><path d="M-60-7A60 60 0 0 1 59-16v28A60 60 0 0 0-60 12z" fill="url(#gloss)"/><path d="M-39 53q5-35 39-35t39 35v12h-78z" fill="#35423e"/><path d="M-12 20h24v19h-24z" fill="#dfc1a6"/><ellipse cy="-4" rx="20" ry="26" fill="#f4ddc4"/><path d="M-23-6q-4-29 20-36 27 1 27 31l-10-4-6-12q-13 18-31 20z" fill="#717a6a"/><path d="M-18 1h5m24 0h5" stroke="#41483d" stroke-width="2.5" stroke-linecap="round"/><path d="M-7 14q7 4 14 0" fill="none" stroke="#af7868" stroke-width="2" stroke-linecap="round"/><circle r="66" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="2"/><path d="M-47 43h16" stroke="#fff0c2" stroke-width="3" stroke-linecap="round"/></g>
+    <g transform="translate(798 674)"><circle r="66" fill="#7155bd"/><circle r="60" fill="#8b70ce"/><path d="M-60-7A60 60 0 0 1 59-16v28A60 60 0 0 0-60 12z" fill="url(#gloss)"/><path d="M-39 53q5-35 39-35t39 35v12h-78z" fill="#293b36"/><path d="M-12 20h24v19h-24z" fill="#e5c9ad"/><ellipse cy="-4" rx="20" ry="26" fill="#f1d8bf"/><path d="M-22-7q-4-29 24-35 25 5 24 30l-8-7-7-12q-14 17-33 20z" fill="#7b6e59"/><path d="M-18 1h5m24 0h5" stroke="#443e43" stroke-width="2.5" stroke-linecap="round"/><path d="M-7 14q7 4 14 0" fill="none" stroke="#ad7466" stroke-width="2" stroke-linecap="round"/><circle r="66" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="2"/><path d="M-47 43h16" stroke="#d7caff" stroke-width="3" stroke-linecap="round"/></g>
+    <g transform="translate(956 674)"><circle r="66" fill="#43a879"/><circle r="60" fill="#64bd8b"/><path d="M-60-7A60 60 0 0 1 59-16v28A60 60 0 0 0-60 12z" fill="url(#gloss)"/><path d="M-39 53q5-35 39-35t39 35v12h-78z" fill="#30443d"/><path d="M-12 20h24v19h-24z" fill="#dfc2a7"/><ellipse cy="-4" rx="20" ry="26" fill="#f5dfc8"/><path d="M-23-9q-3-29 20-35 25 3 27 28l-9-6-7-11q-14 17-31 19z" fill="#956d68"/><path d="M-18 1h5m24 0h5" stroke="#41453f" stroke-width="2.5" stroke-linecap="round"/><path d="M-7 14q7 4 14 0" fill="none" stroke="#b17869" stroke-width="2" stroke-linecap="round"/><circle r="66" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="2"/><path d="M-47 43h16" stroke="#cef0d8" stroke-width="3" stroke-linecap="round"/></g>
+
+    <g text-anchor="middle" font-family="'Microsoft YaHei',sans-serif" font-size="11" font-weight="700" fill="#303a36">
+      <text x="166" y="772">01 / 男 · 林</text><text x="324" y="772">02 / 女 · 岚</text><text x="482" y="772">03 / 男 · 砾</text><text x="640" y="772">04 / 女 · 白</text><text x="798" y="772">05 / 男 · 青</text><text x="956" y="772">06 / 女 · 夕</text>
+    </g>
+    <path d="M92 808h936" stroke="#d5ddd8"/>
+    <text x="92" y="841" fill="#65736c" font-family="'Microsoft YaHei',sans-serif" font-size="10">头像回归圆形、色块和简洁人像，不做复杂场景；三男三女，四类 MBTI 色彩灵感均有覆盖。</text>
+    <g font-family="Arial,sans-serif" font-size="9" font-weight="700"><circle cx="105" cy="876" r="5" fill="#8067ca"/><text x="116" y="879" fill="#65736c">紫 / Analysts</text><circle cx="235" cy="876" r="5" fill="#58b983"/><text x="246" y="879" fill="#65736c">绿 / Diplomats</text><circle cx="382" cy="876" r="5" fill="#469ac0"/><text x="393" y="879" fill="#65736c">蓝绿 / Sentinels</text><circle cx="552" cy="876" r="5" fill="#e3ae3c"/><text x="563" y="879" fill="#65736c">琥珀 / Explorers</text></g>
+    <text x="1028" y="879" text-anchor="end" fill="#87918b" font-family="sans-serif" font-size="9">选中态：原有荧光绿细环</text>
+  </g>
+  <text x="560" y="958" text-anchor="middle" fill="#75817a" font-family="Arial,sans-serif" font-size="10" font-weight="700" letter-spacing="2">CONCEPT ONLY · PRODUCTION UI UNCHANGED</text>
+</svg>

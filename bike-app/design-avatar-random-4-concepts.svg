@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="900" viewBox="0 0 1120 900" role="img" aria-labelledby="title desc">
+  <title id="title">P09 风格随机参数头像四版概念稿</title>
+  <desc id="desc">四种圆形头像候选，沿用应用深灰、荧光绿、青绿与 P09 界面语言，头像底色借鉴 MBTI 四组色彩。仅为设计提案。</desc>
+  <defs>
+    <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#e9ece8"/><stop offset="1" stop-color="#dfe5df"/></linearGradient>
+    <linearGradient id="paper" x2="1" y2="1"><stop stop-color="#fff" stop-opacity=".97"/><stop offset="1" stop-color="#edf1eb"/></linearGradient>
+    <linearGradient id="deep" x2="1" y2="1"><stop stop-color="#202727"/><stop offset="1" stop-color="#303a36"/></linearGradient>
+    <linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0dc"/><stop offset="1" stop-color="#d5ae91"/></linearGradient>
+    <filter id="shadow" x="-.15" y="-.2" width="1.3" height="1.5"><feDropShadow dx="0" dy="7" stdDeviation="9" flood-color="#202727" flood-opacity=".12"/></filter>
+    <clipPath id="clip"><circle r="50"/></clipPath>
+  </defs>
+  <rect width="1120" height="900" fill="url(#bg)"/>
+  <text x="64" y="58" fill="#75817a" font-family="Arial,sans-serif" font-size="10" font-weight="700" letter-spacing="2.5">P09 AVATAR STUDY / RANDOMIZED EXPLORATION 05</text>
+  <text x="64" y="101" fill="#202727" font-family="'Microsoft YaHei',sans-serif" font-size="27" font-weight="700">贴合应用整体风格 · 四版头像候选</text>
+  <text x="1056" y="99" text-anchor="end" fill="#68766f" font-family="Arial,sans-serif" font-size="10" font-weight="700" letter-spacing="1.1">2 MALE + 2 FEMALE · DRAFT ONLY</text>
+  <path d="M64 122h992" stroke="#aab7b0"/>
+  <g filter="url(#shadow)"><rect x="64" y="146" width="992" height="638" rx="10" fill="url(#paper)" stroke="#c6d0ca"/><rect x="64" y="146" width="992" height="4" rx="2" fill="#90b919"/></g>
+  <text x="92" y="186" fill="#68766f" font-family="Arial,sans-serif" font-size="9" font-weight="700" letter-spacing="1.7">RIDER PROFILE / PRESET AVATARS</text>
+  <text x="1028" y="186" text-anchor="end" fill="#159eae" font-family="Arial,sans-serif" font-size="9" font-weight="700" letter-spacing="1.2">P09 GLASS · LIME SELECTED STATE</text>
+  <path d="M310 210v525M558 210v525M806 210v525" stroke="#d7ded9"/>
+
+  <!-- Candidate 01: seed 6578, soft green palette, side-swept short cut, double rim, lime tab. -->
+  <g transform="translate(186 342)">
+    <circle r="61" fill="#202727"/><circle r="57" fill="#748b67"/><circle r="50" fill="#91a984"/>
+    <g clip-path="url(#clip)"><path d="M-52 22q52-17 104 0v38H-52z" fill="#303a36"/><path d="M-19 13h38v20h-38z" fill="url(#skin)"/><ellipse cy="-7" rx="22" ry="28" fill="url(#skin)"/><path d="M-26-8q-2-30 25-32 27 2 28 29l-9-8-6-10q-17 15-38 12z" fill="#313b37"/><path d="M-19 0h6m25 0h6" stroke="#202727" stroke-width="2.5" stroke-linecap="round"/><path d="M-7 12q7 4 14 0" fill="none" stroke="#a36f62" stroke-width="2" stroke-linecap="round"/><path d="M-35 33l18-8L0 48l17-23 18 8" fill="none" stroke="#a5c547" stroke-width="2"/><path d="M-49-25q25-31 69-16" fill="none" stroke="#c9d8bb" stroke-width="2" opacity=".8"/></g>
+    <circle r="61" fill="none" stroke="#fff" stroke-opacity=".82" stroke-width="1.5"/><circle r="55" fill="none" stroke="#b7d94a" stroke-opacity=".68" stroke-width="1"/><path d="M-58 34h13" stroke="#b7d94a" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <text x="186" y="432" text-anchor="middle" fill="#303a36" font-family="'Microsoft YaHei',sans-serif" font-size="12" font-weight="700">01 · 林 / 男</text>
+  <text x="186" y="454" text-anchor="middle" fill="#748f1c" font-family="Arial,sans-serif" font-size="8" font-weight="700" letter-spacing="1">DIPLOMAT GREEN</text>
+  <g transform="translate(92 480)" font-family="'Microsoft YaHei',sans-serif" font-size="9" fill="#58665f"><text y="0">种子 6578</text><text y="21">侧分短发 · 双细环</text><text y="42">荧光绿侧标 · 柔和底色</text></g>
+  <g transform="translate(92 570)"><circle r="18" cx="16" cy="15" fill="#748b67"/><circle r="13" cx="16" cy="15" fill="#91a984"/><path d="M1 26q15-6 30 0v10H1z" fill="#303a36"/><ellipse cx="16" cy="14" rx="6" ry="8" fill="#f0d1b5"/><path d="M10 13q0-8 7-9 7 1 6 8l-3-2-2-3-8 3z" fill="#313b37"/><path d="M-5 48h43" stroke="#d7ded9"/></g>
+  <text x="150" y="591" fill="#75817a" font-family="Arial,sans-serif" font-size="8">头像栏预览</text>
+
+  <!-- Candidate 02: seed 5263, teal/blue palette, close crop, segmented rim, cyan mark. -->
+  <g transform="translate(434 342)">
+    <circle r="61" fill="#202727"/><circle r="57" fill="#327f91"/><circle r="50" fill="#58aab2"/>
+    <g clip-path="url(#clip)"><path d="M-53 21q53-20 106 0v39H-53z" fill="#263432"/><path d="M-18 13h36v21h-36z" fill="url(#skin)"/><ellipse cy="-7" rx="21" ry="27" fill="url(#skin)"/><path d="M-25-9q-1-29 24-32 24 2 25 29l-9-5-6-10q-14 12-34 11z" fill="#39433e"/><path d="M-18 0h6m24 0h6" stroke="#202727" stroke-width="2.4" stroke-linecap="round"/><path d="M-7 12q7 4 14 0" fill="none" stroke="#a36f62" stroke-width="2" stroke-linecap="round"/><path d="M-31 33l15-8L0 48l16-23 15 8" fill="none" stroke="#90b919" stroke-width="2"/><path d="M-47-27q18-26 48-20" fill="none" stroke="#d5eeee" stroke-width="2" opacity=".75"/></g>
+    <circle r="61" fill="none" stroke="#fff" stroke-opacity=".86" stroke-width="1.5"/><path d="M-43-43A61 61 0 0 1-4-60M10-60A61 61 0 0 1 48-37M59 5A61 61 0 0 1 43 43M-58 18A61 61 0 0 1-48 40" fill="none" stroke="#63d1d2" stroke-width="2.2" stroke-linecap="round"/><circle cx="46" cy="-37" r="3" fill="#b7d94a"/>
+  </g>
+  <text x="434" y="432" text-anchor="middle" fill="#303a36" font-family="'Microsoft YaHei',sans-serif" font-size="12" font-weight="700">02 · 砾 / 男</text>
+  <text x="434" y="454" text-anchor="middle" fill="#159eae" font-family="Arial,sans-serif" font-size="8" font-weight="700" letter-spacing="1">SENTINEL TEAL</text>
+  <g transform="translate(340 480)" font-family="'Microsoft YaHei',sans-serif" font-size="9" fill="#58665f"><text y="0">种子 5263</text><text y="21">短碎发 · 分段光环</text><text y="42">青绿节点 · 冷调玻璃感</text></g>
+  <g transform="translate(340 570)"><circle r="18" cx="16" cy="15" fill="#327f91"/><circle r="13" cx="16" cy="15" fill="#58aab2"/><path d="M1 26q15-6 30 0v10H1z" fill="#263432"/><ellipse cx="16" cy="14" rx="6" ry="8" fill="#f0d1b5"/><path d="M10 13q0-8 7-9 7 1 6 8l-3-2-2-3-8 3z" fill="#39433e"/><path d="M-5 48h43" stroke="#d7ded9"/></g>
+  <text x="398" y="591" fill="#75817a" font-family="Arial,sans-serif" font-size="8">头像栏预览</text>
+
+  <!-- Candidate 03: seed 7632, muted analyst violet used only as avatar field, angled crop and lime notch. -->
+  <g transform="translate(682 342)">
+    <circle r="61" fill="#202727"/><circle r="57" fill="#675493"/><circle r="50" fill="#8876b4"/>
+    <g clip-path="url(#clip)"><path d="M-53 22q53-19 106 0v39H-53z" fill="#303a36"/><path d="M-17 13h34v21h-34z" fill="url(#skin)"/><ellipse cy="-7" rx="21" ry="27" fill="url(#skin)"/><path d="M-26-7q-7-28 19-35 27-4 32 26l-8-5-8-12q-12 16-34 15z" fill="#544d58"/><path d="M-18 0h6m24 0h6" stroke="#202727" stroke-width="2.4" stroke-linecap="round"/><path d="M-7 12q7 4 14 0" fill="none" stroke="#a36f62" stroke-width="2" stroke-linecap="round"/><path d="M-30 32l15-8L0 48l16-24 15 8" fill="none" stroke="#90b919" stroke-width="2"/><path d="M-43-29q19-26 49-18" fill="none" stroke="#e2daf3" stroke-width="2" opacity=".8"/><path d="M-29-30q15-12 31-13" fill="none" stroke="#c0b5d8" stroke-width="1.5"/></g>
+    <circle r="61" fill="none" stroke="#fff" stroke-opacity=".82" stroke-width="1.5"/><circle r="54" fill="none" stroke="#baa9e6" stroke-opacity=".72" stroke-width="1"/><path d="M47-38l8-5" stroke="#b7d94a" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <text x="682" y="432" text-anchor="middle" fill="#303a36" font-family="'Microsoft YaHei',sans-serif" font-size="12" font-weight="700">03 · 岚 / 女</text>
+  <text x="682" y="454" text-anchor="middle" fill="#70609e" font-family="Arial,sans-serif" font-size="8" font-weight="700" letter-spacing="1">ANALYST VIOLET</text>
+  <g transform="translate(588 480)" font-family="'Microsoft YaHei',sans-serif" font-size="9" fill="#58665f"><text y="0">种子 7632</text><text y="21">斜刘海短发 · 双层圆环</text><text y="42">荧光绿微标 · 柔和紫灰</text></g>
+  <g transform="translate(588 570)"><circle r="18" cx="16" cy="15" fill="#675493"/><circle r="13" cx="16" cy="15" fill="#8876b4"/><path d="M1 26q15-6 30 0v10H1z" fill="#303a36"/><ellipse cx="16" cy="14" rx="6" ry="8" fill="#f0d1b5"/><path d="M10 13q0-8 7-9 7 1 6 8l-3-2-2-3-8 3z" fill="#544d58"/><path d="M-5 48h43" stroke="#d7ded9"/></g>
+  <text x="646" y="591" fill="#75817a" font-family="Arial,sans-serif" font-size="8">头像栏预览</text>
+
+  <!-- Candidate 04: seed 9459, muted sentinel teal, soft bob, segmented rim and tiny signal mark. -->
+  <g transform="translate(930 342)">
+    <circle r="61" fill="#202727"/><circle r="57" fill="#327f91"/><circle r="50" fill="#68aeb0"/>
+    <g clip-path="url(#clip)"><path d="M-53 22q53-18 106 0v39H-53z" fill="#303a36"/><path d="M-17 13h34v21h-34z" fill="url(#skin)"/><ellipse cy="-7" rx="21" ry="27" fill="url(#skin)"/><path d="M-26-9q-3-27 24-33 27 5 27 31l-9-4-8-13q-13 17-34 19z" fill="#66726a"/><path d="M-24-7q-8 23-4 39m52-39q8 23 4 39" fill="none" stroke="#66726a" stroke-width="5"/><path d="M-18 0h6m24 0h6" stroke="#202727" stroke-width="2.4" stroke-linecap="round"/><path d="M-7 12q7 4 14 0" fill="none" stroke="#a36f62" stroke-width="2" stroke-linecap="round"/><path d="M-30 32l15-8L0 48l16-24 15 8" fill="none" stroke="#90b919" stroke-width="2"/><path d="M-44-28q20-27 49-19" fill="none" stroke="#d5eeee" stroke-width="2" opacity=".8"/><path d="M-15-47q14-7 27-3" fill="none" stroke="#e5f5f1" stroke-width="1.8"/></g>
+    <circle r="61" fill="none" stroke="#fff" stroke-opacity=".86" stroke-width="1.5"/><path d="M-47-39A61 61 0 0 1-8-60M8-60A61 61 0 0 1 45-40M58 13A61 61 0 0 1 39 48M-59 12A61 61 0 0 1-48 39" fill="none" stroke="#8bd3d3" stroke-width="2" stroke-linecap="round"/><circle cx="-47" cy="-39" r="3" fill="#b7d94a"/>
+  </g>
+  <text x="930" y="432" text-anchor="middle" fill="#303a36" font-family="'Microsoft YaHei',sans-serif" font-size="12" font-weight="700">04 · 白 / 女</text>
+  <text x="930" y="454" text-anchor="middle" fill="#159eae" font-family="Arial,sans-serif" font-size="8" font-weight="700" letter-spacing="1">SENTINEL TEAL</text>
+  <g transform="translate(836 480)" font-family="'Microsoft YaHei',sans-serif" font-size="9" fill="#58665f"><text y="0">种子 9459</text><text y="21">齐肩短发 · 分段光环</text><text y="42">青绿信号点 · 轻亮描边</text></g>
+  <g transform="translate(836 570)"><circle r="18" cx="16" cy="15" fill="#327f91"/><circle r="13" cx="16" cy="15" fill="#68aeb0"/><path d="M1 26q15-6 30 0v10H1z" fill="#303a36"/><ellipse cx="16" cy="14" rx="6" ry="8" fill="#f0d1b5"/><path d="M10 13q0-8 7-9 7 1 6 8l-3-2-2-3-8 3z" fill="#66726a"/><path d="M-5 48h43" stroke="#d7ded9"/></g>
+  <text x="894" y="591" fill="#75817a" font-family="Arial,sans-serif" font-size="8">头像栏预览</text>
+
+  <path d="M92 646h936" stroke="#d5ddd8"/>
+  <text x="92" y="675" fill="#65736c" font-family="'Microsoft YaHei',sans-serif" font-size="10">生成参数：底色从 MBTI 四组色彩灵感中抽取；头像直径、发型轮廓、环线样式、识别色标分别随机。</text>
+  <text x="92" y="699" fill="#87918b" font-family="'Microsoft YaHei',sans-serif" font-size="9">交互建议：悬停轻抬 2px；点击后 P09 荧光绿选中环柔和亮起，头像本体不自动旋转。</text>
+  <text x="92" y="735" fill="#87918b" font-family="Arial,sans-serif" font-size="8">Random seeds: 6578 · 5263 · 7632 · 9459　/　四版均为概念草稿，头像选择、上传及数据功能未更改。</text>
+  <text x="560" y="847" text-anchor="middle" fill="#75817a" font-family="Arial,sans-serif" font-size="10" font-weight="700" letter-spacing="2">DESIGN PROPOSAL · AWAITING USER APPROVAL</text>
+</svg>
