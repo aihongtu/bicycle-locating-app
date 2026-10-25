@@ -1,62 +1,94 @@
-/* bluetooth.js — 真实蓝牙设备查找、连接流程与指令接口（Web Bluetooth：navigator.bluetooth.requestDevice）。
- * 能力分层：
- *  - 查找：scanForDevice() 调系统蓝牙选择器，返回 {name, device}
- *  - 连接流程：attach()/current()/isConnected()/disconnect() 管理当前连接设备
- *  - 指令接口：sendGlow()/sendRing() 向设备下发发光/响铃指令。
- *    真实硬件需通过 GATT 特征写入指令（需设备协议文档，见 sendCommand 内 TODO）；
- *    当前无硬件协议时统一返回 {ok:false, reason:'unsupported'}，由页面回退模拟反馈。
- *  - 不支持 Web Bluetooth 时页面回退模拟设备扫描。
- * UMD，可在 Node 用 mock 测试。 */
+/* Web Bluetooth transport for the Bike Locator ESP32 firmware. */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) { module.exports = factory(); }
   else { root.BikeApp = root.BikeApp || {}; root.BikeApp.BleDevice = factory(); }
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var connected = null; // 当前已连接的真实设备（device 对象）
+  // Keep these UUIDs identical to firmware/esp32s3_bike/esp32s3_bike.ino.
+  var SERVICE_UUID = '9f6c1000-7d4a-4f3b-9a5c-2d8e6f1a0001';
+  var COMMAND_UUID = '9f6c1001-7d4a-4f3b-9a5c-2d8e6f1a0001';
+  var connected = null;
+  var commandCharacteristic = null;
 
-  // 当前浏览器是否支持 Web Bluetooth（真实设备查找）
   function isSupported() {
     return typeof navigator !== 'undefined' && !!navigator.bluetooth && typeof navigator.bluetooth.requestDevice === 'function';
   }
 
-  // 由设备对象派生可展示的设备名（优先 name，其次 id，缺省未知）
   function deviceName(device) {
     if (device && device.name) return device.name;
     if (device && device.id) return '蓝牙设备 ' + device.id.slice(0, 4);
     return '未知蓝牙设备';
   }
 
-  // 调用系统蓝牙选择器，让用户选择附近真实设备；返回 {name, device}
   function scanForDevice() {
-    return navigator.bluetooth.requestDevice({ acceptAllDevices: true }).then(function (device) {
+    return navigator.bluetooth.requestDevice({
+      filters: [{ services: [SERVICE_UUID] }],
+      optionalServices: [SERVICE_UUID]
+    }).then(function (device) {
       return { name: deviceName(device), device: device || null };
     });
   }
 
-  // ---- 连接流程 ----
+  function clearConnection() {
+    connected = null;
+    commandCharacteristic = null;
+  }
+
+  function connect(device) {
+    if (!device || !device.gatt) return Promise.reject(new Error('所选设备不支持蓝牙 GATT'));
+    return device.gatt.connect().then(function (server) {
+      return server.getPrimaryService(SERVICE_UUID);
+    }).then(function (service) {
+      return service.getCharacteristic(COMMAND_UUID);
+    }).then(function (characteristic) {
+      connected = device;
+      commandCharacteristic = characteristic;
+      if (device.addEventListener) device.addEventListener('gattserverdisconnected', clearConnection);
+      return device;
+    }).catch(function (error) {
+      if (device.gatt.connected) device.gatt.disconnect();
+      clearConnection();
+      throw error;
+    });
+  }
+
+  // Backward-compatible helper for callers that only need to clear local state.
   function attach(device) { connected = device || null; return connected; }
   function current() { return connected; }
-  function isConnected() { return !!connected; }
-  function disconnect() { connected = null; return true; }
-
-  // ---- 指令接口：发光 / 响铃 ----
-  // 同步返回 {ok, reason}：
-  //  - not-connected：尚未连接真实设备
-  //  - unsupported：已连接但当前无该设备 GATT 协议实现（页面回退模拟反馈）
-  //  - ok:true：已成功下发（接入真实硬件并实现 sendCommand 后）
-  function sendCommand(kind) {
-    if (!connected) return { ok: false, reason: 'not-connected' };
-    // TODO(真实硬件): 依据设备 GATT 服务/特征文档，向对应特征写入发光/响铃指令。
-    // 示例：device.gatt.connect().then(svc => svc.getCharacteristic(CMD_UUID).then(ch => ch.writeValue(...)))
-    return { ok: false, reason: 'unsupported' };
+  function isConnected() { return !!(connected && connected.gatt && connected.gatt.connected && commandCharacteristic); }
+  function disconnect() {
+    var device = connected;
+    clearConnection();
+    if (device && device.gatt && device.gatt.connected) device.gatt.disconnect();
+    return true;
   }
-  function sendGlow() { return sendCommand('glow'); }
-  function sendRing() { return sendCommand('ring'); }
+
+  function sendCommand(kind) {
+    if (!isConnected()) return Promise.resolve({ ok: false, reason: 'not-connected' });
+    var payload = kind === 'ring' ? 'RING' : 'GLOW';
+    var bytes = new TextEncoder().encode(payload);
+    var write = commandCharacteristic.writeValueWithResponse
+      ? commandCharacteristic.writeValueWithResponse(bytes)
+      : commandCharacteristic.writeValue(bytes);
+    return write.then(function () { return { ok: true }; }).catch(function (error) {
+      return { ok: false, reason: 'write-failed', error: error };
+    });
+  }
 
   return {
-    isSupported: isSupported, scanForDevice: scanForDevice, deviceName: deviceName,
-    attach: attach, current: current, isConnected: isConnected, disconnect: disconnect,
-    sendGlow: sendGlow, sendRing: sendRing
+    SERVICE_UUID: SERVICE_UUID,
+    COMMAND_UUID: COMMAND_UUID,
+    isSupported: isSupported,
+    scanForDevice: scanForDevice,
+    deviceName: deviceName,
+    connect: connect,
+    attach: attach,
+    current: current,
+    isConnected: isConnected,
+    disconnect: disconnect,
+    // Firmware handles GLOW on the lamp-control GPIO and switches the lamp off after its timeout.
+    sendGlow: function () { return sendCommand('glow'); },
+    sendRing: function () { return sendCommand('ring'); }
   };
 });

@@ -303,6 +303,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
 }
 body.dark .mc-btn { background: rgba(37,47,43,.86); border-color: rgba(255,255,255,.18); }
 .mc-btn:active { transform: scale(.94); }
+.mc-btn.gnss-connected { border-color: var(--accent); color: var(--accent); }
 .action-bar { display: flex; gap: 10px; margin: 10px 0; }
 .big-btn {
   flex: 1;

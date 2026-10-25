@@ -9,12 +9,33 @@
   var AmapEngine = AmapAPI.AmapEngine;        // 构造函数
   var SimDevice = window.BikeApp.SimDevice;
   var BleDevice = window.BikeApp.BleDevice;
+  var GnssSerial = window.BikeApp.GnssSerial;
 
   var YOU = { x: 460, y: 250 }; // 模拟"你"的位置（sim 模式）
   var BASE_GEO = { lng: 121.4737, lat: 31.2304 }; // 默认基准（上海）：sim 世界坐标与真实经纬度的换算原点
 
   function create(store, root) {
     var state = store.state;
+
+    function triggerDeviceAction(kind) {
+      var bike = state.get().bike;
+      var isRealDevice = !!(bike && bike.source === 'bluetooth');
+      var send = kind === 'ring' ? BleDevice.sendRing : BleDevice.sendGlow;
+      Promise.resolve(send()).then(function (res) {
+        if (res.ok) {
+          ui.toast(kind === 'ring' ? '已向设备发送响铃指令' : '已向设备发送发光指令');
+          if (kind === 'ring') state.ringBike(3); else state.glowBike(8);
+          return;
+        }
+        // Keep the existing local demo behavior for non-hardware bikes.
+        if (!isRealDevice) {
+          ui.toast(kind === 'ring' ? '已模拟响铃' : '已模拟亮灯');
+          if (kind === 'ring') state.ringBike(3); else state.glowBike(8);
+          return;
+        }
+        ui.toast(res.reason === 'not-connected' ? '设备蓝牙已断开，请重新连接' : '设备未能执行该指令');
+      }).catch(function () { ui.toast('蓝牙指令发送失败，请检查连接'); });
+    }
 
     // ---- 地图引擎：先默认 sim，高德加载成功后切换为 amap ----
     var simCanvas = el('canvas', { width: 340, height: 420 });
@@ -30,6 +51,8 @@
     var navView = el('div', { class: 'modal-mask nav-mask', style: 'display:none;' });
     var manageModal = el('div', { class: 'modal-mask', style: 'display:none;' });
     var connectModal = el('div', { class: 'modal-mask', style: 'display:none;' });
+    var gnssButton;
+    var gnssHasCentered = false;
 
     function isAmap() { return !!engine.map; }
 
@@ -66,20 +89,8 @@
         actionBar.appendChild(el('button', { class: 'big-btn start', icon: 'signal', text: '寻找并连接设备', onclick: showConnect }));
         return;
       }
-      actionBar.appendChild(el('button', { class: 'big-btn glow', text: '发光', 'aria-label': '发光', onclick: function () {
-        var res = BleDevice.sendGlow();
-        if (res.ok) { ui.toast('已向设备下发发光'); draw(); renderStatus(); return; }
-        if (res.reason === 'not-connected') ui.toast('尚未连接真实设备，已模拟亮灯');
-        else ui.toast('该设备暂不支持真实控制，已模拟亮灯');
-        state.glowBike(8); draw(); renderStatus();
-      } }));
-      actionBar.appendChild(el('button', { class: 'big-btn ring', text: '响铃', 'aria-label': '响铃', onclick: function () {
-        var res = BleDevice.sendRing();
-        if (res.ok) { ui.toast('已向设备下发响铃'); draw(); renderStatus(); return; }
-        if (res.reason === 'not-connected') ui.toast('尚未连接真实设备，已模拟响铃');
-        else ui.toast('该设备暂不支持真实控制，已模拟响铃');
-        state.ringBike(3); draw(); renderStatus();
-      } }));
+      actionBar.appendChild(el('button', { class: 'big-btn glow', text: '发光', 'aria-label': '发光', onclick: function () { triggerDeviceAction('glow'); } }));
+      actionBar.appendChild(el('button', { class: 'big-btn ring', text: '响铃', 'aria-label': '响铃', onclick: function () { triggerDeviceAction('ring'); } }));
     }
 
     function draw() {
@@ -100,6 +111,7 @@
 
     function makeControls() {
       var c = el('div', { class: 'map-controls' }, [
+        (GnssSerial && GnssSerial.isSupported()) ? (gnssButton = el('button', { class: 'mc-btn icon-only', icon: 'signal', text: '电脑GNSS', title: '连接电脑上的 GNSS 模块', 'aria-label': '连接电脑上的 GNSS 模块', onclick: toggleGnss })) : null,
         el('button', { class: 'mc-btn icon-only', icon: 'refresh', text: '刷新位置', title: '刷新位置', 'aria-label': '刷新位置', onclick: function () { locateNow(); } }),
         el('button', { class: 'mc-btn icon-only', icon: 'target', text: '定位车', title: '定位车', 'aria-label': '定位车', onclick: function () {
           var b = state.get().bike;
@@ -110,6 +122,62 @@
         el('button', { class: 'mc-btn icon-only', icon: 'minus', text: '缩小', title: '缩小地图', 'aria-label': '缩小地图', onclick: function () { engine.zoomOut(); } })
       ]);
       return c;
+    }
+
+    function setGnssButton(connected) {
+      if (!gnssButton) return;
+      var title = connected ? '断开电脑上的 GNSS 模块' : '连接电脑上的 GNSS 模块';
+      gnssButton.title = window.BikeApp.I18n ? window.BikeApp.I18n.translate(title) : title;
+      gnssButton.setAttribute('aria-label', gnssButton.title);
+      gnssButton.classList.toggle('gnss-connected', !!connected);
+    }
+
+    function toggleGnss() {
+      if (!GnssSerial) { ui.toast('当前浏览器不支持电脑串口定位'); return; }
+      if (GnssSerial.isConnected()) {
+        GnssSerial.disconnect().then(function () { setGnssButton(false); });
+        return;
+      }
+      GnssSerial.connect({
+        onStatus: function (message) { ui.toast(message); },
+        onPosition: function (geo) {
+          function applyPosition(mapGeo) {
+            var base = isAmap() ? (engine.base || BASE_GEO) : BASE_GEO;
+            var p = AmapAPI.simFromGeo(base, mapGeo.lng, mapGeo.lat);
+            var firstFix = !gnssHasCentered;
+            if (!state.get().bike) state.addBike('GNSS 测试车', p, { source: 'serial-gnss' });
+            else state.updateBikePosition(p.x, p.y);
+            if (firstFix) {
+              if (isAmap()) engine.map.setCenter([mapGeo.lng, mapGeo.lat]);
+              else engine.centerOn(p.x, p.y);
+              gnssHasCentered = true;
+              var quality = geo.hdop === null ? '' : ' · HDOP ' + geo.hdop.toFixed(1);
+              ui.toast('收到 GNSS 位置：' + geo.lat.toFixed(6) + ', ' + geo.lng.toFixed(6) + quality);
+            }
+            setGnssButton(true);
+          }
+
+          // EC200U reports GPS/WGS-84 coordinates; AMap's base map uses GCJ-02.
+          if (isAmap() && window.AMap && window.AMap.convertFrom) {
+            window.AMap.convertFrom([geo.lng, geo.lat], 'gps', function (status, result) {
+              if (status === 'complete' && result && result.locations && result.locations.length) {
+                var converted = result.locations[0];
+                applyPosition({ lng: converted.getLng(), lat: converted.getLat() });
+              } else {
+                ui.toast('高德坐标转换失败，暂按 GNSS 原始坐标显示');
+                applyPosition(geo);
+              }
+            });
+          } else {
+            applyPosition(geo);
+          }
+        }
+      }).then(function () {
+        setGnssButton(true);
+      }).catch(function (error) {
+        setGnssButton(false);
+        ui.toast('GNSS 连接失败：' + (error && error.message ? error.message : '请检查串口'));
+      });
     }
 
     function showInfoCard() {
@@ -123,14 +191,10 @@
         el('p', { text: '距你：' + distanceMeters(YOU, b.position) + ' 米' }),
         el('div', { class: 'modal-actions' }, [
           el('button', { class: 'mini-btn', icon: 'signal', text: '发光', onclick: function () {
-            var res = BleDevice.sendGlow();
-            if (!res.ok) state.glowBike(8);
-            ui.toast(res.ok ? '已向设备下发发光' : '已模拟亮灯'); draw();
+            triggerDeviceAction('glow');
           } }),
           el('button', { class: 'mini-btn', icon: 'bell', text: '响铃', onclick: function () {
-            var res = BleDevice.sendRing();
-            if (!res.ok) state.ringBike(3);
-            ui.toast(res.ok ? '已向设备下发响铃' : '已模拟响铃'); draw();
+            triggerDeviceAction('ring');
           } }),
           el('button', { class: 'mini-btn primary', icon: 'walk', text: '步行导航', onclick: function () { infoModal.style.display = 'none'; showNav(); } })
         ]),
@@ -228,19 +292,27 @@
       ]));
       connectModal.style.display = 'flex';
       if (BleDevice.isSupported()) {
-        // 真实蓝牙：系统选择器展示附近真实设备，用户选定后"确定为我的车"
+        // 真实蓝牙：系统选择器只列出提供本 App 自定义服务的 ESP32 设备。
         BleDevice.scanForDevice().then(function (dev) {
           var card = connectModal.querySelector('.modal-card');
           card.innerHTML = '';
           card.appendChild(el('h3', { icon: 'signal', text: '找到设备' }));
           var row = el('div', { class: 'bike-row' }, [
             el('span', { class: 'bike-name', icon: 'link', text: dev.name }),
-            el('button', { class: 'mini-btn primary', text: '确定为我的车', onclick: function () {
-              state.addBike(dev.name, undefined, { source: 'bluetooth' });
-              BleDevice.attach(dev.device);
-              ui.toast('已连接 ' + dev.name + '（真实蓝牙）');
-              connectModal.style.display = 'none';
-              renderStatus(); renderActionBar(); draw();
+            el('button', { class: 'mini-btn primary', text: '连接设备', onclick: function () {
+              var button = card.querySelector('.mini-btn.primary');
+              button.disabled = true; button.textContent = '正在连接…';
+              BleDevice.connect(dev.device).then(function () {
+                state.addBike(dev.name, undefined, { source: 'bluetooth' });
+                ui.toast('已连接 ' + dev.name + '，可以测试响铃');
+                connectModal.style.display = 'none';
+                renderStatus(); renderActionBar(); draw();
+              }).catch(function (e) {
+                button.disabled = false; button.textContent = '重试连接';
+                var note = card.querySelector('.connect-error');
+                if (!note) { note = el('p', { class: 'privacy-note connect-error' }); card.appendChild(note); }
+                note.textContent = '连接失败：' + ((e && e.message) ? e.message : '请确认设备已上电并运行固件');
+              });
             } })
           ]);
           card.appendChild(row);
