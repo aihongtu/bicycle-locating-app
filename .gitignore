@@ -17,4 +17,3 @@ Desktop.ini
 # 本机密钥配置：不要提交高德凭据或 HTTPS 私钥
 /bike-app/js/amap-config.local.js
 /bike-app/certs/key.local.pem
-/bike-app/project.private.config.json

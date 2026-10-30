@@ -23,7 +23,8 @@ global.document = {
 global.AMap = {
   Map: function () {
     this._objs = [];
-    this.on = function () {};
+    this._onCount = 0;
+    this.on = function () { this._onCount++; };
     this.setCenter = function () {};
     this.zoomIn = function () {};
     this.zoomOut = function () {};
@@ -125,4 +126,28 @@ test('高德加载有超时回退：弱网下脚本挂起也能回退 sim，避�
   ok(src.includes('setTimeout'), 'load 应设置超时');
   ok(/removeChild/.test(src), '超时应移除挂起的脚本元素');
   ok(/fire\(false\)/.test(src), '超时后应回退（fire false）');
+});
+
+test('setUserGeo 首次锚定 base，后续用户移动不改变车辆/轨迹基准', () => {
+  const e = new AmapEngine(makeFakeEl(), {});
+  const first = { lng: 121.5, lat: 31.2 };
+  const second = { lng: 121.6, lat: 31.3 };
+  e.setUserGeo(first);
+  eq(e.base.lng, first.lng, '首次定位应锚定 base');
+  eq(e.base.lat, first.lat);
+  e.setUserGeo(second);
+  eq(e.base.lng, first.lng, 'base 不应随用户移动');
+  eq(e.base.lat, first.lat, 'base 不应随用户移动');
+  eq(e._userGeo.lng, second.lng, '用户位置应更新');
+});
+
+test('drawScaleBar 多次调用只注册一次 zoomend/moveend 监听器', () => {
+  const e = new AmapEngine(makeFakeEl(), {});
+  const baseline = e.map._onCount;
+  e.drawScaleBar();
+  const afterFirst = e.map._onCount;
+  e.drawScaleBar();
+  const afterSecond = e.map._onCount;
+  eq(afterFirst, baseline + 2, '首次应注册 zoomend/moveend');
+  eq(afterSecond, afterFirst, '第二次不应再注册');
 });

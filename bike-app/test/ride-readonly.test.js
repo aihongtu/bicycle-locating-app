@@ -39,9 +39,9 @@ test('今日骑行记录可直接渲染（只读展示路径），无需进行�
   });
 });
 
-test('今日仅保留最近一次骑行记录（覆盖式）', () => {
+test('今日聚合：同一天多次骑行都保留（不再覆盖式只留最近一次）', () => {
   const st = fresh();
-  const t0 = Date.now();
+  const t0 = new Date(2026, 0, 1, 10, 0, 0).getTime();
   st.startRide(t0);
   st.appendRidePoint(0, 0, t0, 12);
   st.appendRidePoint(1, 0, t0 + 600000, 12);
@@ -54,7 +54,7 @@ test('今日仅保留最近一次骑行记录（覆盖式）', () => {
   st.appendRidePoint(1, 0, t1 + 600000, 18);
   st.finishRide(t1 + 600000);
 
-  eq(st.get().rides.today.length, 1);
-  ok(st.get().rides.today[0].id !== id1, '被新记录覆盖');
+  eq(st.get().rides.today.length, 2, '同一天两次都保留');
+  eq(st.get().rides.today[0].id, id1, '第一次仍在');
   eq(st.get().rides.history.length, 2, '历史累计保留');
 });

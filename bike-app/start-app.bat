@@ -1,10 +1,15 @@
 @echo off
 cd /d "%~dp0"
-set "NODE=node"
+where node >nul 2>&1
+if errorlevel 1 (
+  echo [error] Node.js not found. Install Node.js first.
+  pause
+  exit /b 1
+)
 echo ==========================================
 echo    Bike Locator - Local Server
 echo    http://localhost:8080
-echo    Close this window to stop the server
+echo    Close the server window to stop it
 echo ==========================================
 echo.
 REM If port 8080 is already in use, do not start another server (avoids EADDRINUSE)
@@ -17,9 +22,9 @@ if not errorlevel 1 (
   exit /b 0
 )
 echo Starting server...
-start "" /b "%NODE%" server.js
+start "BikeApp Server" cmd /k node server.js
 timeout /t 2 >nul
 start "" "http://localhost:8080"
-echo Server running. Opening browser...
+echo Server window opened. Close it to stop the server.
 echo.
 pause

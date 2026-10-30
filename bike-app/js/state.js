@@ -6,20 +6,28 @@
 })(typeof self !== 'undefined' ? self : this, function (Core, SimBike, SimNearby) {
   'use strict';
 
+  function normalizeRides(r) {
+    r = r || {};
+    if (!Array.isArray(r.today)) r.today = r.today ? [r.today] : [];
+    if (!Array.isArray(r.history)) r.history = [];
+    if (!r.hiddenSegments || typeof r.hiddenSegments !== 'object') r.hiddenSegments = {};
+    return r;
+  }
+
   function createState(initial) {
     initial = initial || {};
     // 车辆：每个用户仅一辆车。兼容旧数据({list,activeId} 或单辆 bike)迁移为单车。
     // 区分"明确无车(已删除)"与"首次启动(给默认车)"：bikeProvided=true 且 bike 为 null 表示已删除。
-    var hasExplicit = (initial.bike !== undefined) || (initial.bikes !== undefined);
+    var hasExplicit = (initial.bike != null) || (initial.bikes != null) || !!initial.bikeProvided;
     var bikeInit = null;
     if (initial.bike) { bikeInit = initial.bike; if (!bikeInit.id) bikeInit.id = Core.makeId('bike'); }
     else if (initial.bikes && initial.bikes.list && initial.bikes.list.length) { bikeInit = initial.bikes.list[0]; }
-    else if (hasExplicit || initial.bikeProvided) { bikeInit = null; }  // 明确为无车（已删除）
+    else if (hasExplicit) { bikeInit = null; }                           // 明确为无车（已删除）
     else { bikeInit = Core.defaultBike(); }                              // 首次启动，给默认车
     var s = {
       profile: initial.profile || Core.defaultProfile(),
       bike: bikeInit,               // 唯一车辆；可为 null（已删除）
-      rides: initial.rides || { today: [], history: [] },
+      rides: normalizeRides(initial.rides),
       social: initial.social || { nearby: [], requests: [], friends: [], messages: {} },
       activeRide: null
     };
@@ -78,10 +86,12 @@
     }
     function expireBikeFx(now) {
       now = now || Core.now();
+      var changed = false;
       if (s.bike) {
-        if (s.bike.glow && s.bike.glow.active && s.bike.glow.until <= now) s.bike.glow.active = false;
-        if (s.bike.ring && s.bike.ring.active && s.bike.ring.until <= now) s.bike.ring.active = false;
+        if (s.bike.glow && s.bike.glow.active && s.bike.glow.until <= now) { s.bike.glow.active = false; changed = true; }
+        if (s.bike.ring && s.bike.ring.active && s.bike.ring.until <= now) { s.bike.ring.active = false; changed = true; }
       }
+      if (changed) emit();
       return s.bike;
     }
 
@@ -114,14 +124,51 @@
       var computed = Core.computeRideTotals(r.points);
       var session = { id: r.id, date: r.date, startedAt: r.startedAt, endedAt: ts,
         points: r.points, segments: computed.segments, totals: computed.totals };
-      // 今日只保留当天；history 保留全部
-      s.rides.today = [session];
+      // 今日聚合：同一天保留所有 session；history 保留全部
+      var date = session.date;
+      s.rides.today = (s.rides.today || []).filter(function (x) { return x.date === date; });
+      s.rides.today.push(session);
       s.rides.history.push(session);
+      // 清理已不在今日的隐藏路段，避免 hiddenSegments 无限增长
+      var keep = {};
+      s.rides.today.forEach(function (x) { keep[x.id] = true; });
+      Object.keys(s.rides.hiddenSegments || {}).forEach(function (k) {
+        if (!keep[k.split(':')[0]]) delete s.rides.hiddenSegments[k];
+      });
       s.activeRide = null;
       emit();
       return session;
     }
     function activeRidePoints() { return s.activeRide ? s.activeRide.points : []; }
+    function cancelRide() {
+      if (!s.activeRide) return { ok: false, reason: 'no-active' };
+      s.activeRide = null;
+      emit();
+      return { ok: true };
+    }
+
+    // ---------- 今日路段隐藏/恢复（只影响今日视图，不修改原始历史） ----------
+    function hideSegment(sessionId, index) {
+      if (!sessionId || typeof index !== 'number' || index < 0) return { ok: false, reason: 'invalid' };
+      s.rides.hiddenSegments[sessionId + ':' + index] = true;
+      emit();
+      return { ok: true };
+    }
+    function restoreSegment(sessionId, index) {
+      var key = sessionId + ':' + index;
+      if (!s.rides.hiddenSegments[key]) return { ok: false, reason: 'not-hidden' };
+      delete s.rides.hiddenSegments[key];
+      emit();
+      return { ok: true };
+    }
+    function restoreAllSegments() {
+      s.rides.hiddenSegments = {};
+      emit();
+      return { ok: true };
+    }
+    function isSegmentHidden(sessionId, index) {
+      return !!s.rides.hiddenSegments[sessionId + ':' + index];
+    }
 
     // ---------- 骑友 ----------
     // 附近用户仅来自真实数据；不再自动生成虚拟人。确保数组存在即可。
@@ -229,6 +276,8 @@
       hasBike: hasBike, getBike: getBike, addBike: addBike, removeBike: removeBike, updateBikePosition: updateBikePosition,
       glowBike: glowBike, ringBike: ringBike, expireBikeFx: expireBikeFx,
       startRide: startRide, appendRidePoint: appendRidePoint, finishRide: finishRide, activeRidePoints: activeRidePoints,
+      cancelRide: cancelRide,
+      hideSegment: hideSegment, restoreSegment: restoreSegment, restoreAllSegments: restoreAllSegments, isSegmentHidden: isSegmentHidden,
       pauseRide: pauseRide, resumeRide: resumeRide, ensureNearby: ensureNearby, canAddFriend: canAddFriend, sendFriendRequest: sendFriendRequest,
       settleRequest: settleRequest, receiveFriendRequest: receiveFriendRequest,
       acceptRequest: acceptRequest, ignoreRequest: ignoreRequest, removeFriend: removeFriend,

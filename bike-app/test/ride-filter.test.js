@@ -15,7 +15,7 @@ test('isSaneStep：支持自定义阈值', () => {
   eq(Core.isSaneStep({ x: 0, y: 0 }, { x: 500, y: 0 }, 1), false, '1.5km>1 漂移');
 });
 
-test('轨迹闭合兜底：首尾接近(环线)时补回程里程与时长', () => {
+test('轨迹闭合兜底：首尾接近(环线)时补回程里程，时长按缺口估算', () => {
   const pts = [
     { x: 0, y: 0, t: 0, speedKmh: 18 },
     { x: 100, y: 0, t: 60000, speedKmh: 18 },
@@ -24,7 +24,7 @@ test('轨迹闭合兜底：首尾接近(环线)时补回程里程与时长', () 
   ];
   const c = Core.computeRideTotals(pts);
   closeTo(c.totals.distanceKm, 0.95, 0.02, '闭合段 0.045km 计入总里程');
-  eq(c.totals.durationMin, 4, '闭合段补最后一段时长');
+  closeTo(c.totals.durationMin, 3.15, 0.02, '只补缺口时长（0.045/18*60=0.15min），不重复整段');
 });
 
 test('非环线：终点距起点远时不补回程', () => {

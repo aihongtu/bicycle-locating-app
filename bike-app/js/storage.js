@@ -6,7 +6,16 @@
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  var KEYS = { PROFILE: 'bikeapp.profile', BIKE: 'bikeapp.bike', RIDES: 'bikeapp.rides', SOCIAL: 'bikeapp.social' };
+  var KEYS = {
+    PROFILE: 'bikeapp.profile',
+    BIKE: 'bikeapp.bike',
+    RIDES: 'bikeapp.rides',
+    SOCIAL: 'bikeapp.social',
+    // 设置类数据也纳入备份/恢复；activeTab、returnTab 属于临时状态，不放进来。
+    THEME: 'bikeapp.theme',
+    LANGUAGE: 'bikeapp.language',
+    PRIVACY: 'bikeapp.privacyConsent'
+  };
 
   function createStorage(backend, avatarBackend) {
     // backend: {getItem,setItem,removeItem}  (localStorage 类似物)
@@ -14,8 +23,23 @@
     if (!backend) backend = { getItem: function () { return null; }, setItem: function () {}, removeItem: function () {} };
     if (!avatarBackend) avatarBackend = { get: function () { return null; }, set: function () {}, keys: function () { return []; }, remove: function () {} };
 
-    function getJSON(key) { var raw = backend.getItem(key); if (!raw) return null; try { return JSON.parse(raw); } catch (e) { return null; } }
-    function setJSON(key, val) { backend.setItem(key, JSON.stringify(val)); }
+    function getJSON(key) {
+      try {
+        var raw = backend.getItem(key);
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch (e) { return null; }
+    }
+    function setJSON(key, val) {
+      try {
+        backend.setItem(key, JSON.stringify(val));
+      } catch (e) {
+        // localStorage 配额不足时不要静默失败：给用户一次可见提示。
+        if (typeof window !== 'undefined' && window.BikeApp && window.BikeApp.ui) {
+          window.BikeApp.ui.toast('本地存储空间不足，部分数据可能未保存');
+        }
+      }
+    }
 
     function allKeys() { var k = []; for (var p in KEYS) { k.push(KEYS[p]); } return k; }
     function reset() {

@@ -64,7 +64,7 @@
     return 2 * R * Math.asin(Math.min(1, Math.sqrt(s)));
   }
 
-  var COLOR_HEX = { '黄': '#f5c518', '绿': '#2ecc71', '红': '#e74c3c' };
+  var COLOR_HEX = { '黄': '#f5c518', '绿': '#2ecc71', '红': '#e74c3c', '灰': '#95a5a6' };
 
   function AmapEngine(container, opts) {
     opts = opts || {};
@@ -77,6 +77,8 @@
     this._glowEl = null;
     this._callbacks = [];
     this._userGeo = this.base;
+    // 车辆/轨迹的模拟坐标基准只在首次定位时锚定一次，之后不再随用户移动。
+    this._originFixed = false;
 
     // 创建地图
     this.map = new AMap.Map(container, {
@@ -108,7 +110,13 @@
   AmapEngine.prototype.onRedraw = function (cb) { this.on('redraw', cb); };
   AmapEngine.prototype.onClick = function (cb) { this.on('click', cb); };
 
-  AmapEngine.prototype.setUserGeo = function (geo) { this._userGeo = geo; this.base = geo; };
+  AmapEngine.prototype.setUserGeo = function (geo) {
+    if (!this._originFixed) {
+      this.base = geo;          // 首次定位锚定车辆/轨迹基准
+      this._originFixed = true;
+    }
+    this._userGeo = geo;        // 之后只更新“我”的位置
+  };
   AmapEngine.prototype.getUserGeo = function () { return this._userGeo; };
 
   // 模拟坐标接口（与 Canvas MapEngine 对齐）
@@ -201,7 +209,7 @@
     if (this._legendEl) return; // 幂等：只创建一次
     var el = document.createElement('div');
     el.className = 'amap-legend';
-    var items = [['#f5c518', '快(<3min/km)'], ['#2ecc71', '正常(3-9)'], ['#e74c3c', '慢(>9min/km)']];
+    var items = [['#f5c518', '快(<3min/km)'], ['#2ecc71', '正常(3-9)'], ['#e74c3c', '慢(>9min/km)'], ['#95a5a6', '静止/无数据']];
     items.forEach(function (it) {
       var row = document.createElement('div'); row.className = 'amap-legend-row';
       var c = document.createElement('span'); c.className = 'amap-legend-swatch'; c.style.background = it[0];
@@ -215,12 +223,6 @@
   // 比例尺：基于高德真实像素<->经纬度换算，选取"漂亮"米数，长度与实际距离严格一致。
   // （高德 v2.0 无 AMap.Scale 控件，故自画真实换算的比例尺）
   AmapEngine.prototype.drawScaleBar = function () {
-    if (!this._scaleEl) {
-      var el = document.createElement('div');
-      el.className = 'amap-scale';
-      el.innerHTML = '<span class="amap-scale-line"></span><span class="amap-scale-text"></span>';
-      this.el.appendChild(el); this._scaleEl = el;
-    }
     var self = this;
     var update = function () {
       var targetPx = 64;
@@ -242,8 +244,16 @@
       if (line) line.style.width = Math.max(20, barPx) + 'px';
       if (txt) txt.textContent = best >= 1000 ? (best / 1000) + ' 公里' : best + ' 米';
     };
+    if (!this._scaleEl) {
+      var el = document.createElement('div');
+      el.className = 'amap-scale';
+      el.innerHTML = '<span class="amap-scale-line"></span><span class="amap-scale-text"></span>';
+      this.el.appendChild(el); this._scaleEl = el;
+      // 只注册一次，避免每次 draw() 都累积监听器
+      this.map.on('zoomend', update);
+      this.map.on('moveend', update);
+    }
     update();
-    this.map.on('zoomend', update); this.map.on('moveend', update);
   };
 
   return {

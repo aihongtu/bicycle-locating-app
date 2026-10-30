@@ -24,3 +24,14 @@ test('HTTPS 私钥使用本地忽略文件（避免提交）', () => {
   const gitignore = fs.readFileSync(path.join(__dirname, '..', '..', '.gitignore'), 'utf8');
   ok(gitignore.includes('/bike-app/certs/key.local.pem'), '私钥文件应被 Git 忽略');
 });
+
+test('静态服务拒绝私钥/私有配置/备份，并对 URL 路径做规范化', () => {
+  const src = fs.readFileSync(SERVER, 'utf8');
+  ok(src.includes('DENY_FILES'), '应有文件黑名单');
+  ok(src.includes("'/certs/'"), '应拒绝 certs 目录');
+  ok(src.includes("'/project.private.config.json'"), '应拒绝私有配置');
+  ok(!/DENY_FILES\s*=\s*new Set\(\[[^\]]*amap-config\.local\.js/.test(src), '高德本地配置需可被页面加载，不能加入静态黑名单');
+  ok(src.includes('path.posix.normalize'), '应规范化 URL 路径，防止 ./ 绕过');
+  ok(src.includes("'X-Content-Type-Options'"), '应设置 nosniff');
+  ok(src.includes("minVersion: 'TLSv1.2'"), 'HTTPS 应限制最低 TLS 版本');
+});

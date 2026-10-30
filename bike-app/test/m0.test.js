@@ -72,6 +72,24 @@ test('backup 导出/导入往返一致', () => {
   eq(s.getAvatar('up1'), 'imgdata');
 });
 
+test('backup 包含设置类数据（主题/语言/隐私同意）', () => {
+  const s = Storage.createStorage(memBackend(), memAvatar());
+  s.setJSON(s.KEYS.THEME, 'dark');
+  s.setJSON(s.KEYS.LANGUAGE, 'en');
+  s.setJSON(s.KEYS.PRIVACY, '1');
+
+  const bak = Backup.exportBackup(s, 222);
+  eq(bak.data[s.KEYS.THEME], 'dark');
+  eq(bak.data[s.KEYS.LANGUAGE], 'en');
+  eq(bak.data[s.KEYS.PRIVACY], '1');
+
+  s.reset();
+  Backup.importBackup(s, bak);
+  eq(s.getJSON(s.KEYS.THEME), 'dark');
+  eq(s.getJSON(s.KEYS.LANGUAGE), 'en');
+  eq(s.getJSON(s.KEYS.PRIVACY), '1');
+});
+
 test('backup 导入非法数据抛错', () => {
   const s = Storage.createStorage(memBackend(), memAvatar());
   throws(() => Backup.importBackup(s, null), '空数据');

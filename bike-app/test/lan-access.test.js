@@ -8,6 +8,12 @@ const { execSync } = require('child_process');
 
 const SERVER = path.join(__dirname, '..', 'server.js');
 
+// 需要本地服务器运行且局域网 IP 可达，默认跳过；设置 TEST_LAN=1 再跑。
+if (process.env.TEST_LAN !== '1') {
+  console.log('SKIP lan-access (set TEST_LAN=1 to run)');
+  return;
+}
+
 function allLanIPv4() {
   const out = [];
   const ifs = os.networkInterfaces();

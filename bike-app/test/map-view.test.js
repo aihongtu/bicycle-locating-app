@@ -33,6 +33,14 @@ test('panPx 平移视图且被钳制在世界范围内', () => {
   ok(vw.offsetY <= vw.worldH - vw.height / vw.scale, 'offsetY<=界内');
 });
 
+test('centerOn 高 Y 值时 Y 轴钳制使用 worldH，不会越界', () => {
+  const v = mk();
+  v.centerOn(500, 700);
+  const vw = v.getView();
+  ok(vw.offsetY <= vw.worldH - vw.height / vw.scale + 1e-9,
+    'offsetY 不应超过 worldH - height/scale，实际=' + vw.offsetY);
+});
+
 test('zoomAt 以锚点为中心缩放（锚点世界坐标不动）', () => {
   const v = mk();
   v.centerOn(520, 300);
@@ -80,4 +88,33 @@ test('比例尺像素长度与标注米数严格一致（防乱标）', () => {
     closeTo(bar.meters, expected, 0.5,
       '像素与标注不符 scale=' + s + ' px=' + bar.px + ' 米=' + bar.meters);
   }
+});
+
+test('setBounds 限制平移范围，centerOn 不会越界', () => {
+  const v = mk();
+  v.setBounds(-500, -400, 1500, 1200);
+  v.centerOn(5000, 5000);
+  const vw = v.getView();
+  ok(vw.offsetX <= vw.maxX - vw.width / vw.scale + 1e-9, 'offsetX 不超右边界');
+  ok(vw.offsetY <= vw.maxY - vw.height / vw.scale + 1e-9, 'offsetY 不超下边界');
+});
+
+test('setBoundsFromPoints 会把点纳入可平移范围', () => {
+  const v = mk();
+  v.setBounds(0, 0, 100, 100);
+  ok(v.setBoundsFromPoints([{ x: 500, y: 500 }], 40));
+  const b = v.getBounds();
+  ok(b.minX < 500 && b.maxX > 500, 'X 边界包含点');
+  ok(b.minY < 500 && b.maxY > 500, 'Y 边界包含点');
+});
+
+test('fitBounds 把全部点放进视口并留出边距', () => {
+  const v = mk();
+  const pts = [{ x: 0, y: 0 }, { x: 1000, y: 800 }];
+  ok(v.fitBounds(pts, 20), 'fitBounds 应成功');
+  pts.forEach(function (p) {
+    const s = v.worldToScreen(p.x, p.y);
+    ok(s.x >= -1 && s.x <= v.getView().width + 1, 'X 在视口内，x=' + s.x);
+    ok(s.y >= -1 && s.y <= v.getView().height + 1, 'Y 在视口内，y=' + s.y);
+  });
 });

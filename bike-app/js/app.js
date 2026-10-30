@@ -32,6 +32,10 @@
         tabs[k].classList.toggle('active', k === name);
       });
       try { window.localStorage.setItem('bikeapp.activeTab', name); } catch (e) {}
+      // 页面从 display:none 变为可见后，让 Canvas 按真实尺寸重新计算 DPR/视口。
+      setTimeout(function () {
+        try { window.dispatchEvent(new Event('resize')); } catch (e) {}
+      }, 0);
     }
     Object.keys(tabs).forEach(function (k) {
       tabs[k].addEventListener('click', function () { switchTab(k); });
@@ -51,11 +55,13 @@
     try { saved = window.localStorage.getItem('bikeapp.theme'); } catch (e) {}
     var isDark = saved === 'dark';
     document.body.classList.toggle('dark', isDark);
+    try { window.dispatchEvent(new Event('bikeapp:theme')); } catch (e) {}
     var btn = document.getElementById('theme-toggle');
     if (!btn) return;
     btn.addEventListener('click', function () {
       var nowDark = document.body.classList.toggle('dark');
       try { window.localStorage.setItem('bikeapp.theme', nowDark ? 'dark' : 'light'); } catch (e) {}
+      try { window.dispatchEvent(new Event('bikeapp:theme')); } catch (e) {}
     });
   }
 

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ESP32 GNSS + BLE 接入概念稿</title>
+  <style>
+    :root{color-scheme:dark;--bg:#111814;--panel:#1d2721;--line:#506055;--muted:#a8b5aa;--text:#edf2e9;--lime:#b7d94a;--cyan:#46c3ce;--amber:#e8b04a;--red:#ce6461}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0,#28352d,#101612 65%);color:var(--text);font:14px/1.55 "Microsoft YaHei",sans-serif;padding:24px}
+    main{max-width:980px;margin:auto}.kicker{color:var(--lime);font:700 10px Bahnschrift,Arial,sans-serif;letter-spacing:2px}.head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:16px}.head h1{font:600 25px/1.25 "Microsoft YaHei",sans-serif;margin:5px 0}.head p{color:var(--muted);margin:0}.badge{padding:7px 9px;border:1px solid #63705e;color:var(--lime);font:700 10px Bahnschrift,Arial,sans-serif;white-space:nowrap}
+    .section-title{margin:20px 0 9px;font:700 10px Bahnschrift,"Microsoft YaHei",sans-serif;letter-spacing:1.2px;color:#c8d5c9}.diagram{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:10px;align-items:stretch}.stack{display:grid;gap:10px}.node{position:relative;min-height:96px;padding:13px;border:1px solid var(--line);background:linear-gradient(140deg,rgba(39,52,44,.94),rgba(23,31,26,.94));box-shadow:inset 0 1px rgba(255,255,255,.06)}.node::before{content:"";position:absolute;top:-1px;left:11px;width:25px;height:2px;background:var(--lime);box-shadow:0 0 9px #b7d94a66}.node h2{font-size:14px;margin:0 0 4px}.node p{margin:0;color:var(--muted);font-size:11px}.node .label{display:inline-block;margin-top:8px;padding:3px 6px;background:#111914;color:#dce8d5;font:700 9px Bahnschrift,Arial,sans-serif;letter-spacing:.5px}.device{border-color:#9bb959}.esp{border-color:#46c3ce;background:linear-gradient(145deg,#203a38,#1b2923)}.flow{display:grid;place-items:center;min-height:96px;color:var(--lime);text-align:center;font:700 10px/1.45 Bahnschrift,"Microsoft YaHei",sans-serif;letter-spacing:.5px}.arrow{font-size:22px;line-height:1;color:var(--lime)}.arrow.dual{letter-spacing:8px}.warning{margin-top:10px;padding:10px 12px;border-left:2px solid var(--amber);background:#e8b04a0d;color:#c6cfc6;font-size:11px}.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card{border:1px solid var(--line);background:rgba(27,37,31,.92);padding:13px}.card h2{font-size:13px;margin:0 0 8px}.card p{font-size:11px;color:var(--muted);margin:6px 0}.flow-list{display:grid;gap:6px}.flow-row{display:grid;grid-template-columns:80px 1fr;gap:9px;padding:7px 8px;background:#111914;border-left:2px solid var(--cyan);font-size:11px}.flow-row strong{color:#d3e992}.mock{border:1px solid #58645a;background:#18211c;padding:12px}.mock-top{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #45534a;padding-bottom:8px}.mock-top strong{font-size:14px}.online{font-size:10px;color:var(--lime)}.position{display:flex;align-items:center;gap:10px;margin:12px 0;padding:10px;background:#202c24;border-left:2px solid var(--lime)}.position b{font:600 17px Bahnschrift,Arial,sans-serif}.position small{display:block;color:var(--muted);font-size:10px}.mini-map{height:92px;position:relative;overflow:hidden;border:1px solid #45534a;background:linear-gradient(155deg,#19251f,#121a16)}.road{position:absolute;left:-5%;top:55%;width:110%;height:5px;border-radius:9px;background:#46594f;transform:rotate(-13deg)}.route{position:absolute;left:16%;top:53%;width:62%;height:3px;background:var(--lime);transform:rotate(-13deg);box-shadow:0 0 8px #b7d94a88}.pin{position:absolute;left:75%;top:31%;width:14px;height:14px;border:2px solid white;border-radius:50%;background:var(--cyan);box-shadow:0 0 0 6px #46c3ce30}.actions{display:flex;gap:8px;margin-top:9px}.action{flex:1;text-align:center;padding:8px 6px;border:1px solid #82954b;background:#29351e;color:#e4f29a;font-size:11px}.action:last-child{border-color:#527f82;background:#1d3030;color:#ace3e4}.clean{list-style:none;padding:0;margin:0}.clean li{margin:6px 0;padding-left:15px;position:relative;font-size:11px;color:#d2dbd1}.clean li::before{content:"";position:absolute;left:0;top:7px;width:5px;height:5px;background:var(--lime);transform:rotate(45deg)}.pending{margin-top:13px;padding:11px 13px;border:1px dashed #8a814a;background:#d2be3510;color:#e6deb2;font-size:11px}
+    @media(max-width:680px){body{padding:14px}.head{display:block}.badge{display:inline-block;margin-top:10px}.diagram{grid-template-columns:1fr}.flow{min-height:34px}.arrow{transform:rotate(90deg)}.cols{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<main>
+  <header class="head"><div><div class="kicker">HARDWARE LINK / P09 CONCEPT</div><h1>位置与车灯控制统一接入 ESP32</h1><p>概念稿：车辆定位走 ESP32 → 手机；响铃和发光仍由手机 → ESP32 控制。</p></div><span class="badge">待你确认 · 未改正式程序</span></header>
+
+  <div class="section-title">01 / 目标连接结构</div>
+  <section class="diagram" aria-label="GNSS、ESP32 与手机 App 的连接结构">
+    <div class="node device"><h2>Quectel GNSS 板</h2><p>在车载模块内取得卫星坐标，通过板上的 UART 将坐标交给 ESP32。</p><span class="label">GNSS → UART</span></div>
+    <div class="stack"><div class="flow"><span class="arrow">→</span><br>UART 坐标输入<br><small>ESP 读取并校验定位数据</small></div><div class="node esp"><h2>ESP32-S3 车载控制器</h2><p>统一负责定位读取、BLE 数据上报、灯光开关与铃声播放。</p><span class="label">BLE GATT / 双向</span></div><div class="flow"><span class="arrow dual">↔</span><br>蓝牙数据通道<br><small>位置上报 + 按键指令</small></div></div>
+    <div class="node"><h2>手机 App</h2><p>显示车辆位置；发光、响铃按键经 BLE 下发到 ESP32。</p><span class="label">GPS 状态 / 地图 / 控制</span></div>
+  </section>
+  <div class="warning"><strong>接线仍需按板子实物确认：</strong>需要把 GNSS 板的 TX/RX 与 ESP32 可用 UART 引脚交叉连接，并共地。具体引脚、电平和供电以你手头 GNSS 底板丝印/规格为准；概念稿阶段不改接线，也不预设引脚。</div>
+
+  <div class="section-title">02 / 蓝牙消息与 App 显示</div>
+  <section class="cols">
+    <article class="card"><h2>一条 BLE 连接，两种方向</h2><div class="flow-list"><div class="flow-row"><strong>App → ESP</strong><span><code>GLOW</code>：打开灯；<code>RING</code>：播放铃声。沿用当前已有指令。</span></div><div class="flow-row"><strong>ESP → App</strong><span>新增位置通知通道；ESP 定时发送经纬度、定位状态和可用的精度值。</span></div><div class="flow-row"><strong>App 更新</strong><span>连接车辆后订阅位置通知，收到有效定位才移动车辆图钉；断连时显示最后更新时间与离线状态。</span></div></div></article>
+    <article class="card"><h2>找车界面概念</h2><div class="mock"><div class="mock-top"><strong>我的车辆</strong><span class="online">● ESP32 已连接</span></div><div class="position"><span>⌖</span><div><b>定位有效</b><small>GNSS · 精度状态 / 更新时间</small></div></div><div class="mini-map"><i class="road"></i><i class="route"></i><i class="pin"></i></div><div class="actions"><div class="action">◇ 发光</div><div class="action">◉ 响铃</div></div></div></article>
+  </section>
+
+  <div class="section-title">03 / 确认后才执行的范围</div>
+  <section class="cols">
+    <article class="card"><h2>旧地图稿整理建议</h2><ul class="clean"><li>保留当前按钮新版预览和已验收地图备份。</li><li>候选清理旧文件：<code>design-map-p09-dynamic-concept.html</code>、<code>design-map-p09-dynamic-concept-standalone-v1.html</code>。</li><li>删除前再核对这两份确实是你说的“其他两版”。</li></ul></article>
+    <article class="card"><h2>程序改造范围建议</h2><ul class="clean"><li>App 移除电脑串口 GNSS 按钮、读取流程与脚本引用。</li><li>BLE 增加 ESP 位置通知订阅，保留现有发光 / 响铃指令。</li><li>ESP 固件增加 GNSS UART 读取与 BLE 位置广播。</li><li>单独确认 GNSS 板型号、串口引脚与定位输出格式后，再写入固件。</li></ul></article>
+  </section>
+  <div class="pending">此页只展示接入方案。未删除地图文件，未移除电脑串口代码，也未修改 App、ESP 固件或接线。</div>
+</main>
+</body>
+</html>

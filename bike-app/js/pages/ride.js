@@ -8,12 +8,21 @@
   var MapEngine = window.BikeApp.MapEngine;
   var AmapAPI = window.BikeApp.AmapEngine;   // 静态工具（load/canUse/geoFromSim/simFromGeo/haversine）
   var AmapEngine = AmapAPI.AmapEngine;        // 构造函数
+  var BASE_GEO = { lng: 121.4325, lat: 31.0290 }; // 演示区：上海交通大学闵行校区
+
+  function mapStylePref() {
+    try { return window.localStorage.getItem('bikeapp.mapStyle') === 'realistic' ? 'realistic' : 'p09'; }
+    catch (e) { return 'p09'; }
+  }
 
   function create(store, root) {
     var state = store.state;
 
-    var simCanvas = el('canvas', { width: 340, height: 320 });
-    var simEngine = new MapEngine(simCanvas);
+    var simCanvas = el('canvas', { width: 340, height: 320, role: 'img', tabindex: '0', 'aria-label': '模拟地图：显示骑行路线和分段速度' });
+    var simEngine = new MapEngine(simCanvas, {
+      dataUrl: 'assets/map/sjtu-minhang.json',
+      style: mapStylePref()
+    });
     simEngine.kind = 'sim';
     var engine = simEngine;
     var canvasHolder = el('div', { class: 'canvas-holder' }, [simCanvas]);
@@ -23,8 +32,9 @@
     var emptyEl = el('div', { class: 'empty', style: 'display:none;' });
     var mapWrap = el('div', { class: 'map-wrap' }, [canvasHolder, makeControls()]);
     var segModal = el('div', { class: 'modal-mask', style: 'display:none;' });
-    var selectedId = null;       // 选中的历史记录 id；null=今日最新/当前
+    var selectedId = null;       // 选中的历史记录 id；null=今日聚合视图
     var histList = el('div', { class: 'hist-list' });
+    var segPanel = el('div', { class: 'seg-panel' });
 
     // 真实 GPS 记录状态
     var watchId = null;      // navigator.geolocation watch 句柄
@@ -44,9 +54,64 @@
       allRides().forEach(function (x) { if (x.id === id) found = x; });
       return found;
     }
-    function redraw() { renderSummary(); renderEmpty(); renderRecordBar(); renderHistList(); draw(); }
+    function redraw() { renderSummary(); renderEmpty(); renderRecordBar(); renderHistList(); renderSegmentsPanel(); draw(); }
 
-    // 当前要展示的骑行数据：进行中(active) 优先，其次选中的历史记录，否则今日已保存记录
+    function todaySessions() {
+      var today = state.get().rides.today;
+      return Array.isArray(today) ? today : (today ? [today] : []);
+    }
+
+    function visibleSegments(session) {
+      var segs = (session && session.segments) || [];
+      return segs.filter(function (seg, i) {
+        return !state.isSegmentHidden(session.id, i);
+      });
+    }
+
+    function visibleSegmentCount() {
+      var n = 0;
+      todaySessions().forEach(function (session) { n += visibleSegments(session).length; });
+      return n;
+    }
+
+    function hiddenSegmentCount() {
+      var n = 0;
+      todaySessions().forEach(function (session) {
+        (session.segments || []).forEach(function (seg, i) {
+          if (state.isSegmentHidden(session.id, i)) n++;
+        });
+      });
+      return n;
+    }
+
+    // 今日汇总：从每个 session 的总计出发，扣除被隐藏路段，保留闭环补距等总计项
+    function aggregateToday() {
+      var totals = { distanceKm: 0, durationMin: 0, avgSpeedKmh: 0, caloriesKcal: 0 };
+      if (visibleSegmentCount() === 0) return totals;
+      todaySessions().forEach(function (session) {
+        var visible = visibleSegments(session);
+        if (!visible.length) return; // 整次 session 都被隐藏时，连闭环补距也不计入
+        var st = session.totals || {};
+        totals.distanceKm += Number(st.distanceKm) || 0;
+        totals.durationMin += Number(st.durationMin) || 0;
+        totals.caloriesKcal += Number(st.caloriesKcal) || 0;
+        (session.segments || []).forEach(function (seg, i) {
+          if (state.isSegmentHidden(session.id, i)) {
+            totals.distanceKm -= seg.distanceKm;
+            totals.durationMin -= seg.durationMin;
+            totals.caloriesKcal -= seg.durationMin * Core.calPerMin(seg.avgSpeedKmh);
+          }
+        });
+      });
+      totals.distanceKm = Core.round2(totals.distanceKm);
+      totals.durationMin = Core.round2(totals.durationMin);
+      totals.caloriesKcal = Math.max(0, Math.round(totals.caloriesKcal));
+      totals.avgSpeedKmh = totals.durationMin > 0
+        ? Core.round2(totals.distanceKm / (totals.durationMin / 60)) : 0;
+      return totals;
+    }
+
+    // 当前要展示的骑行数据：进行中(active) 优先，其次选中的历史记录，否则今日聚合
     function currentRide() {
       if (recording()) {
         var pts = state.activeRidePoints();
@@ -56,18 +121,35 @@
       }
       if (selectedId) {
         var sel = findRideById(selectedId);
-        if (sel) return { live: false, id: sel.id, date: sel.date, points: sel.points, segments: sel.segments, totals: sel.totals };
-        selectedId = null; // 选中记录已不存在，回退当前
+        if (sel) {
+          return { live: false, readOnly: true, id: sel.id, date: sel.date,
+            points: sel.points, segments: sel.segments, totals: sel.totals };
+        }
+        selectedId = null; // 选中记录已不存在，回退今日
       }
-      return state.get().rides.today[0] || null;
+      var sessions = todaySessions();
+      if (!sessions.length) return null;
+      return {
+        live: false, today: true, sessions: sessions,
+        totals: aggregateToday(),
+        hiddenCount: hiddenSegmentCount(),
+        segments: []
+      };
     }
 
     function renderSummary() {
       var ride = currentRide();
       var totals = ride ? ride.totals : { distanceKm: 0, durationMin: 0, avgSpeedKmh: 0, caloriesKcal: 0 };
       summaryEl.innerHTML = '';
-      var dateLabel = ride && ride.date ? ride.date : (ride && ride.live ? '今日（记录中）' : '今日');
+      var dateLabel;
+      if (ride && ride.date) dateLabel = ride.date;
+      else if (ride && ride.live) dateLabel = '今日（记录中）';
+      else if (ride && ride.today) dateLabel = '今日（' + ride.sessions.length + ' 次）';
+      else dateLabel = '今日';
       summaryEl.appendChild(el('div', { class: 'sum-head', icon: 'calendar', text: dateLabel }));
+      if (ride && ride.today && ride.hiddenCount > 0) {
+        summaryEl.appendChild(el('div', { class: 'sum-note', text: '已隐藏 ' + ride.hiddenCount + ' 段，汇总按剩余路段计算' }));
+      }
       var cell = function (kicker, val, unit, label) {
         return el('div', { class: 'sum-cell' }, [
           el('div', { class: 'sum-kicker', text: kicker }),
@@ -88,9 +170,9 @@
       histList.innerHTML = '';
       var rides = allRides();
       if (!rides.length) { histList.appendChild(el('p', { class: 'hint', text: '还没有骑行记录，点下方按钮开始记录' })); return; }
-      var mk = function (ride, id, label) {
+      var mk = function (ride, id, label, selected) {
         var t = ride.totals || {};
-        return el('button', { class: 'hist-item' + (selectedId === id ? ' sel' : ''), onclick: function () {
+        return el('button', { class: 'hist-item' + (selected ? ' sel' : ''), onclick: function () {
           selectedId = id; redraw();
         } }, [
           el('span', { class: 'hist-date', text: label || ride.date }),
@@ -100,16 +182,93 @@
           ])
         ]);
       };
-      var today = state.get().rides.today[0];
-      if (today) histList.appendChild(mk(today, null, '今日最新'));
-      rides.forEach(function (r) { histList.appendChild(mk(r, r.id, r.date)); });
+      var today = todaySessions();
+      var todayIds = {};
+      today.forEach(function (r, i) {
+        todayIds[r.id] = true;
+        histList.appendChild(mk(r, null, i === today.length - 1 ? '今日最新' : '今日', selectedId === null && i === today.length - 1));
+      });
+      rides.forEach(function (r) {
+        if (!todayIds[r.id]) histList.appendChild(mk(r, r.id, r.date, selectedId === r.id));
+      });
     }
 
     function renderEmpty() {
       var ride = currentRide();
-      emptyEl.style.display = ride ? 'none' : 'block';
+      var allHidden = !!(ride && ride.today && ride.sessions.length && visibleSegmentCount() === 0);
+      emptyEl.style.display = (ride && !allHidden) ? 'none' : 'block';
       emptyEl.innerHTML = '';
       if (!ride) emptyEl.appendChild(el('p', { text: '今天还没有骑行记录，点下方按钮开始记录真实轨迹' }));
+      else if (allHidden) emptyEl.appendChild(el('p', { text: '今日路段已全部隐藏，可在下方“路段管理”里恢复' }));
+    }
+
+    function segmentRow(session, seg, index, canHide, hidden) {
+      var colorClass = seg.color === '黄' ? 'yellow' : (seg.color === '绿' ? 'green' : (seg.color === '红' ? 'red' : 'gray'));
+      var row = el('div', { class: 'seg-row' + (hidden ? ' hidden' : '') }, [
+        el('span', { class: 'seg-dot ' + colorClass }),
+        el('span', { class: 'seg-main' }, [
+          el('span', { class: 'seg-title', text: '第 ' + (index + 1) + ' 段' }),
+          el('span', { class: 'seg-meta', text: seg.distanceKm + ' km · ' + Core.formatDuration(seg.durationMin) + ' · ' + seg.avgSpeedKmh + ' km/h' })
+        ])
+      ]);
+      if (canHide) {
+        row.appendChild(el('button', { class: 'mini-btn' + (hidden ? ' ok' : ''), text: hidden ? '恢复' : '隐藏', onclick: function () {
+          if (hidden) state.restoreSegment(session.id, index);
+          else state.hideSegment(session.id, index);
+          redraw();
+        } }));
+      }
+      return row;
+    }
+
+    function renderSegmentsPanel() {
+      segPanel.innerHTML = '';
+      var ride = currentRide();
+      if (!ride || ride.live) { segPanel.style.display = 'none'; return; }
+
+      if (ride.readOnly) {
+        segPanel.style.display = 'block';
+        segPanel.appendChild(el('div', { class: 'seg-head' }, [el('span', { text: '路段（历史，只读）' })]));
+        (ride.segments || []).forEach(function (seg, i) {
+          segPanel.appendChild(segmentRow(ride, seg, i, false, false));
+        });
+        return;
+      }
+
+      var sessions = ride.sessions || [];
+      if (!sessions.length) { segPanel.style.display = 'none'; return; }
+      segPanel.style.display = 'block';
+      var head = el('div', { class: 'seg-head' }, [el('span', { text: '路段管理' })]);
+      if (ride.hiddenCount > 0) {
+        head.appendChild(el('button', { class: 'mini-btn', text: '恢复全部', onclick: function () {
+          state.restoreAllSegments(); ui.toast('已恢复全部路段'); redraw();
+        } }));
+      }
+      segPanel.appendChild(head);
+
+      var hiddenRows = [];
+      sessions.forEach(function (session, si) {
+        var box = el('div', { class: 'seg-session' });
+        box.appendChild(el('div', { class: 'seg-session-head' }, [
+          el('span', { text: '第 ' + (si + 1) + ' 次 · ' + Core.formatTime(session.startedAt) }),
+          el('span', { text: visibleSegments(session).length + '/' + (session.segments || []).length + ' 段可见' })
+        ]));
+        (session.segments || []).forEach(function (seg, i) {
+          if (state.isSegmentHidden(session.id, i)) {
+            hiddenRows.push({ session: session, seg: seg, index: i });
+          } else {
+            box.appendChild(segmentRow(session, seg, i, true, false));
+          }
+        });
+        segPanel.appendChild(box);
+      });
+
+      if (hiddenRows.length) {
+        segPanel.appendChild(el('div', { class: 'seg-hidden-head', text: '已隐藏 ' + hiddenRows.length + ' 段' }));
+        hiddenRows.forEach(function (row) {
+          segPanel.appendChild(segmentRow(row.session, row.seg, row.index, true, true));
+        });
+      }
     }
 
     function renderRecordBar() {
@@ -212,35 +371,50 @@
 
     function stopRecording() {
       if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
-      if (state.get().activeRide && state.activeRidePoints().length >= 2) {
+      var ar = state.get().activeRide;
+      if (!ar) return;
+      if (state.activeRidePoints().length >= 2) {
         state.finishRide();
         ui.toast('已保存今日骑行记录');
-      } else if (state.get().activeRide) {
-        state.finishRide(); // 点过少也落库（仅 0~1 点，空态回退）
-        ui.toast('记录点过少，未生成有效轨迹');
+      } else {
+        state.cancelRide();
+        ui.toast('记录点过少，本次不保存');
       }
       startedGeo = null;
-      renderRecordBar(); renderSummary(); renderEmpty(); draw();
+      renderRecordBar(); renderSummary(); renderEmpty(); renderSegmentsPanel(); draw();
     }
 
     function makeControls() {
       return el('div', { class: 'map-controls' }, [
         el('button', { class: 'mc-btn icon-only', icon: 'target', text: '定位', title: '定位路线', 'aria-label': '定位路线', onclick: function () {
           var ride = currentRide();
-          var t = (ride && ride.points.length) ? ride.points[0] : { x: 200, y: 380 };
+          var t = rideAnchorPoint(ride);
           engine.centerOn(t.x, t.y); draw();
         } }),
+        el('button', { class: 'mc-btn icon-only', icon: 'compass', text: '看全', title: '显示全部路线', 'aria-label': '显示全部路线', onclick: fitView }),
+        el('button', { class: 'mc-btn icon-only', icon: 'layers', text: '风格', title: '切换地图风格', 'aria-label': '切换地图风格', onclick: toggleMapStyle }),
         el('button', { class: 'mc-btn icon-only', icon: 'plus', text: '放大', title: '放大地图', 'aria-label': '放大地图', onclick: function () { engine.zoomIn(); } }),
         el('button', { class: 'mc-btn icon-only', icon: 'minus', text: '缩小', title: '缩小地图', 'aria-label': '缩小地图', onclick: function () { engine.zoomOut(); } })
       ]);
     }
 
     function draw() {
+      syncBounds();
       var ride = currentRide();
       engine.clear(); engine.drawBase();
-      if (ride && ride.segments && ride.segments.length) engine.drawRoute(ride.segments, ride.points);
-      if (ride && ride.points && ride.points.length) {
-        engine.drawStartEnd(ride.points[0], ride.points[ride.points.length - 1]);
+      if (ride && ride.today) {
+        (ride.sessions || []).forEach(function (session) {
+          var segs = visibleSegments(session);
+          if (segs.length && session.points && session.points.length) {
+            engine.drawRoute(segs, session.points);
+            engine.drawStartEnd(session.points[0], session.points[session.points.length - 1]);
+          }
+        });
+      } else if (ride && ride.segments && ride.segments.length) {
+        engine.drawRoute(ride.segments, ride.points);
+        if (ride.points && ride.points.length) {
+          engine.drawStartEnd(ride.points[0], ride.points[ride.points.length - 1]);
+        }
       }
       engine.drawLegend();
       engine.drawScaleBar();
@@ -268,45 +442,109 @@
       segModal.style.display = 'flex';
     }
 
-    // 点击路段看详情
+    // 点击路段看详情（支持今日多 session 聚合与历史只读）
+    function pickSegment(p) {
+      var ride = currentRide();
+      if (!ride) return null;
+      var hitWorld = (engine.view && engine.view.getView)
+        ? 12 / engine.view.getView().scale : 12;
+      if (ride.today) {
+        var sessions = ride.sessions || [];
+        for (var s = 0; s < sessions.length; s++) {
+          var session = sessions[s];
+          var segs = visibleSegments(session);
+          for (var i = 0; i < segs.length; i++) {
+            var seg = segs[i];
+            var a = session.points[seg.fromIdx], b = session.points[seg.toIdx];
+            if (a && b && pointSegDist(p.x, p.y, a, b) < hitWorld) return seg;
+          }
+        }
+        return null;
+      }
+      if (!ride.segments || !ride.points) return null;
+      for (var j = 0; j < ride.segments.length; j++) {
+        var sg = ride.segments[j];
+        var pa = ride.points[sg.fromIdx], pb = ride.points[sg.toIdx];
+        if (pa && pb && pointSegDist(p.x, p.y, pa, pb) < hitWorld) return sg;
+      }
+      return null;
+    }
+
     function bindClick() {
       if (engine.map) {
         engine.onClick(function (p) {
-          var ride = currentRide();
-          if (!ride || !ride.segments) return;
-          for (var i = 0; i < ride.segments.length; i++) {
-            var a = ride.points[ride.segments[i].fromIdx], b = ride.points[ride.segments[i].toIdx];
-            if (pointSegDist(p.x, p.y, a, b) < 12) { showSeg(ride.segments[i]); return; }
-          }
+          var seg = pickSegment(p);
+          if (seg) showSeg(seg);
         });
       } else {
         simCanvas.addEventListener('click', function (e) {
-          var ride = currentRide();
-          if (!ride || !ride.segments) return;
           var rect = simCanvas.getBoundingClientRect();
           var sx = (e.clientX - rect.left) * (simCanvas.width / rect.width);
           var sy = (e.clientY - rect.top) * (simCanvas.height / rect.height);
           var w = engine.view.screenToWorld(sx, sy);
-          for (var i = 0; i < ride.segments.length; i++) {
-            var a = ride.points[ride.segments[i].fromIdx], b = ride.points[ride.segments[i].toIdx];
-            if (pointSegDist(w.x, w.y, a, b) < 12) { showSeg(ride.segments[i]); return; }
-          }
+          var seg = pickSegment(w);
+          if (seg) showSeg(seg);
         });
       }
     }
 
+    function rideAnchorPoint(ride) {
+      if (!ride) return { x: 200, y: 380 };
+      if (ride.today) {
+        var s = (ride.sessions && ride.sessions[0]) || null;
+        return (s && s.points && s.points.length) ? s.points[0] : { x: 200, y: 380 };
+      }
+      return (ride.points && ride.points.length) ? ride.points[0] : { x: 200, y: 380 };
+    }
+
+    function ridePoints() {
+      var ride = currentRide();
+      if (!ride) return [];
+      if (ride.today) {
+        var pts = [];
+        (ride.sessions || []).forEach(function (s) {
+          if (s.points && s.points.length) pts = pts.concat(s.points);
+        });
+        return pts;
+      }
+      return ride.points || [];
+    }
+
+    function syncBounds() {
+      if (!engine.setBoundsFromPoints) return;
+      engine.setBoundsFromPoints(ridePoints(), 60);
+    }
+
+    function fitView() {
+      if (!engine.fitBounds) return;
+      if (engine.fitBounds(ridePoints(), 28)) ui.toast('已显示全部路线');
+      draw();
+    }
+
+    function toggleMapStyle() {
+      if (!engine.setMapStyle) { ui.toast('当前为高德地图，无法切换模拟风格'); return; }
+      if (!engine.hasMapData()) { ui.toast('离线地图数据未加载，当前区域使用示意地图'); return; }
+      var next = engine.getMapStyle() === 'realistic' ? 'p09' : 'realistic';
+      try { window.localStorage.setItem('bikeapp.mapStyle', next); } catch (e) {}
+      engine.setMapStyle(next);
+      draw();
+      ui.toast(next === 'realistic' ? '已切换为真实地图风格' : '已切换为 P09 仪器风格');
+    }
+
     // 接入高德真实地图（含真实定位基准）
     function tryAmap() {
+      if (window.location.search.indexOf('sim=1') >= 0) return; // ?sim=1 强制查看模拟地图
       AmapAPI.load(function (ok) {
         if (!ok || !AmapAPI.canUse()) return;
         var div = el('div', { class: 'amap-box' });
         canvasHolder.innerHTML = ''; canvasHolder.appendChild(div);
-        engine = new AmapEngine(div, { zoom: 14 });
+        engine = new AmapEngine(div, { zoom: 14, base: BASE_GEO });
         engine.kind = 'amap';
+        engine.onRedraw(draw);
         bindClick();
         function centerOnRide() {
           var ride = currentRide();
-          var t = (ride && ride.points.length) ? ride.points[0] : { x: 200, y: 380 };
+          var t = rideAnchorPoint(ride);
           engine.centerOn(t.x, t.y);
         }
         centerOnRide(); draw(); // 立即绘制，定位成功后更新
@@ -326,11 +564,19 @@
       histList,
       recordBar,
       mapWrap,
+      segPanel,
       emptyEl,
       segModal
     ]));
 
-    (function () { var ride = currentRide(); var t = (ride && ride.points.length) ? ride.points[0] : { x: 200, y: 380 }; engine.centerOn(t.x, t.y); })();
+    simEngine.resize();
+
+    (function () {
+      var ride = currentRide();
+      var pts = ridePoints();
+      if (pts.length > 1 && engine.fitBounds) engine.fitBounds(pts, 28);
+      else { var t = rideAnchorPoint(ride); engine.centerOn(t.x, t.y); }
+    })();
     engine.onRedraw(draw);
     bindClick();
     tryAmap();

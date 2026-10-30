@@ -19,15 +19,16 @@
   }
   function now() { return Date.now(); }
 
-  // 配速(每公里分钟) -> 颜色：<3 黄，3~9 绿，>9 红
+  // 配速(每公里分钟) -> 颜色：<3 黄，3~9 绿，>9 红；0/无效表示静止或无数据，用灰色
   function paceToColor(paceMinPerKm) {
+    if (!isFinite(paceMinPerKm) || paceMinPerKm <= 0) return '灰';
     if (paceMinPerKm < 3) return '黄';
     if (paceMinPerKm <= 9) return '绿';
     return '红';
   }
   function paceColorHex(paceMinPerKm) {
     var c = paceToColor(paceMinPerKm);
-    return c === '黄' ? '#f5c518' : (c === '绿' ? '#2ecc71' : '#e74c3c');
+    return c === '黄' ? '#f5c518' : (c === '绿' ? '#2ecc71' : (c === '红' ? '#e74c3c' : '#95a5a6'));
   }
 
   // 由均速估算 MET
@@ -105,16 +106,17 @@
       durationMin += segments[i].durationMin;
       calories += segments[i].durationMin * calPerMin(segments[i].avgSpeedKmh, weightKg);
     }
-    // 轨迹闭合兜底：若终点距起点很近（环线骑行），把"终点→起点"的回程里程计入
+    // 轨迹闭合兜底：若终点距起点很近（环线骑行），只补“缺口距离”，
+    // 时长按“缺口 / 最后一段均速”估算，避免把最后一段整段时长重复计入。
     if (points && points.length >= 3) {
       var gapKm = pointKm(points[0], points[points.length - 1]);
       if (gapKm < CLOSE_GAP_KM) {
         var lastSeg = segments[segments.length - 1];
+        var extraMin = (lastSeg && lastSeg.avgSpeedKmh > 0)
+          ? gapKm / lastSeg.avgSpeedKmh * 60 : 0;
         distanceKm += gapKm;
-        if (lastSeg) {
-          durationMin += lastSeg.durationMin; // 回程用时按最后一段估算
-          calories += lastSeg.durationMin * calPerMin(lastSeg.avgSpeedKmh, weightKg);
-        }
+        durationMin += extraMin;
+        if (lastSeg) calories += extraMin * calPerMin(lastSeg.avgSpeedKmh, weightKg);
       }
     }
     var avgSpeedKmh = durationMin > 0 ? distanceKm / (durationMin / 60) : 0;

@@ -35,16 +35,29 @@
       subNav.appendChild(mk('好友请求', 'requests', pending || null));
     }
 
+    function requestFriend(near) {
+      var r = state.sendFriendRequest(near.id);
+      if (!r.ok) {
+        if (r.reason === 'limit') {
+          ui.toast('好友数量已达上限（' + Core.FRIEND_LIMIT + '/' + Core.FRIEND_LIMIT + '），无法继续添加');
+        } else if (r.reason === 'cooldown') {
+          ui.toast('冷却中，约 ' + Math.ceil(r.remainingMs / 60000) + ' 分钟后可再次申请');
+        } else {
+          ui.toast('无法添加');
+        }
+        return;
+      }
+      ui.toast('请求已发送，等待对方同意…');
+      redraw();
+    }
+
     function friendButton(near) {
       if (near.relation === 'friend') return el('span', { class: 'rel friend', text: '✓ 好友' });
       if (near.relation === 'requested') return el('span', { class: 'rel pending', text: '请求已发送' });
-      if (near.relation === 'rejected') return el('span', { class: 'rel rejected', text: '已拒绝' });
-      return el('button', { class: 'mini-btn add', text: '＋加好友', onclick: function () {
-        var r = state.sendFriendRequest(near.id);
-        if (!r.ok) { ui.toast(r.reason === 'limit' ? '好友数量已达上限（' + Core.FRIEND_LIMIT + '/' + Core.FRIEND_LIMIT + '），无法继续添加' : '无法添加'); return; }
-        ui.toast('请求已发送，等待对方同意…');
-        redraw();
-      } });
+      if (near.relation === 'rejected') {
+        return el('button', { class: 'mini-btn add', text: '重新申请', onclick: function () { requestFriend(near); } });
+      }
+      return el('button', { class: 'mini-btn add', text: '＋加好友', onclick: function () { requestFriend(near); } });
     }
 
     function renderNearby() {

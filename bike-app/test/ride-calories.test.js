@@ -38,7 +38,13 @@ test('配速分段：黄<3 / 绿3~9 / 红>9 仍正确', () => {
   eq(Core.paceToColor(9.1), '红');
 });
 
-test('闭环回程段同样计入卡路里', () => {
+test('静止/无效配速显示灰色，不再误判为“最快”黄色', () => {
+  eq(Core.paceToColor(0), '灰');
+  eq(Core.paceToColor(null), '灰');
+  eq(Core.paceColorHex(0), '#95a5a6');
+});
+
+test('闭环回程段按缺口时长计入卡路里，不重复整段', () => {
   const pts = [
     { x: 0, y: 0, t: 0, speedKmh: 18 },
     { x: 100, y: 0, t: 60000, speedKmh: 18 },
@@ -46,6 +52,17 @@ test('闭环回程段同样计入卡路里', () => {
     { x: 15, y: 0, t: 180000, speedKmh: 18 } // 距起点0.045km，闭合
   ];
   const c = Core.computeRideTotals(pts);
-  // 段卡路里 3段*1min*calPerMin(18)=3*9.8 + 闭合段1min*9.8 = 39.2
-  eq(c.totals.caloriesKcal, 39);
+  // 3段*1min*calPerMin(18)=29.4 + 缺口0.15min*9.8=1.47 → 30.87 → 31
+  eq(c.totals.caloriesKcal, 31);
+});
+
+test('起点=终点且缺口为0时，时长/卡路里不重复计入', () => {
+  const pts = [
+    { x: 0, y: 0, t: 0, speedKmh: 18 },
+    { x: 100, y: 0, t: 600000, speedKmh: 18 },
+    { x: 0, y: 0, t: 1200000, speedKmh: 18 }
+  ];
+  const c = Core.computeRideTotals(pts);
+  eq(c.totals.durationMin, 20, '20 分钟不应变成 30 分钟');
+  eq(c.totals.caloriesKcal, 196);
 });

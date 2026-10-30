@@ -23,6 +23,17 @@ test('默认有一辆车，且可通过 hasBike/getBike 获取', () => {
   ok(st.getBike() && st.getBike().bikeName);
 });
 
+test('首次启动（无存储、bike=null）给默认车，而不是“未连接车辆”', () => {
+  const st = State.createState({ bike: null, bikeProvided: false });
+  ok(st.hasBike(), '首次启动应有默认车');
+  ok(st.getBike().bikeName);
+});
+
+test('明确删除后（bike=null、bikeProvided=true）保持无车', () => {
+  const st = State.createState({ bike: null, bikeProvided: true });
+  ok(!st.hasBike(), '删除后不应重新给默认车');
+});
+
 test('addBike 创建/替换唯一车辆', () => {
   const st = fresh();
   const b = st.addBike('山地车', { x: 100, y: 100 });

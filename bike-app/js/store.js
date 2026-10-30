@@ -51,8 +51,9 @@
   var initial = {
     profile: storage.getJSON(storage.KEYS.PROFILE) || Core.defaultProfile(),
     // 兼容：旧格式为单辆对象，或 {list,activeId}
-    bike: (rawBike && !rawBike.list) ? rawBike : null,
-    bikes: (rawBike && rawBike.list) ? rawBike : null,
+    // 没有存储时传 undefined，让 State 给默认车；存储里是 null 才表示“已删除”
+    bike: hasStoredBike ? (rawBike && !rawBike.list ? rawBike : null) : undefined,
+    bikes: (hasStoredBike && rawBike && rawBike.list) ? rawBike : undefined,
     bikeProvided: hasStoredBike,
     rides: storage.getJSON(storage.KEYS.RIDES) || { today: [], history: [] },
     social: storage.getJSON(storage.KEYS.SOCIAL) || { nearby: [], requests: [], friends: [], messages: {} }

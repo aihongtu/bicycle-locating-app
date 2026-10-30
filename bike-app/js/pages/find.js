@@ -9,10 +9,15 @@
   var AmapEngine = AmapAPI.AmapEngine;        // 构造函数
   var SimDevice = window.BikeApp.SimDevice;
   var BleDevice = window.BikeApp.BleDevice;
-  var GnssSerial = window.BikeApp.GnssSerial;
 
   var YOU = { x: 460, y: 250 }; // 模拟"你"的位置（sim 模式）
-  var BASE_GEO = { lng: 121.4737, lat: 31.2304 }; // 默认基准（上海）：sim 世界坐标与真实经纬度的换算原点
+  var BASE_GEO = { lng: 121.4325, lat: 31.0290 }; // 演示区：上海交通大学闵行校区
+  var simBaseGeo = null; // sim 模式首次真实定位后锚定，避免非上海用户坐标出界
+
+  function mapStylePref() {
+    try { return window.localStorage.getItem('bikeapp.mapStyle') === 'realistic' ? 'realistic' : 'p09'; }
+    catch (e) { return 'p09'; }
+  }
 
   function create(store, root) {
     var state = store.state;
@@ -38,8 +43,11 @@
     }
 
     // ---- 地图引擎：先默认 sim，高德加载成功后切换为 amap ----
-    var simCanvas = el('canvas', { width: 340, height: 420 });
-    var simEngine = new MapEngine(simCanvas);
+    var simCanvas = el('canvas', { width: 340, height: 420, role: 'img', tabindex: '0', 'aria-label': '模拟地图：显示自行车位置、方向和距离' });
+    var simEngine = new MapEngine(simCanvas, {
+      dataUrl: 'assets/map/sjtu-minhang.json',
+      style: mapStylePref()
+    });
     simEngine.kind = 'sim';
     simEngine.setUserGeo(YOU); // sim 模式："我的位置"标记
     var engine = simEngine;
@@ -51,8 +59,8 @@
     var navView = el('div', { class: 'modal-mask nav-mask', style: 'display:none;' });
     var manageModal = el('div', { class: 'modal-mask', style: 'display:none;' });
     var connectModal = el('div', { class: 'modal-mask', style: 'display:none;' });
-    var gnssButton;
-    var gnssHasCentered = false;
+    var espHasCentered = false;
+    var lastDeviceFixAt = 0;
 
     function isAmap() { return !!engine.map; }
 
@@ -65,15 +73,62 @@
       return Math.round(Core.dist2d(from, to) * Core.KM_PER_UNIT * 1000);
     }
 
+    // 当前“我”的模拟坐标：sim 用 getUserGeo，amap 用真实经纬度反算
+    function userSimPos() {
+      if (isAmap()) {
+        var g = engine._userGeo || engine.base;
+        return AmapAPI.simFromGeo(engine.base, g.lng, g.lat);
+      }
+      return engine.getUserGeo ? engine.getUserGeo() : YOU;
+    }
+
+    function simBase() { return simBaseGeo || BASE_GEO; }
+
+    function contentPoints() {
+      var pts = [userSimPos()];
+      var b = state.get().bike;
+      if (b && b.position) pts.push(b.position);
+      var ride = state.get().rides.today[0];
+      if (ride && ride.points && ride.points.length) pts = pts.concat(ride.points);
+      return pts;
+    }
+
+    function syncBounds() {
+      if (!engine.setBoundsFromPoints) return;
+      engine.setBoundsFromPoints(contentPoints(), 60);
+    }
+
+    function fitView() {
+      if (!engine.fitBounds) return;
+      if (engine.fitBounds(contentPoints(), 28)) ui.toast('已显示全部内容');
+      draw();
+    }
+
+    function toggleMapStyle() {
+      if (!engine.setMapStyle) { ui.toast('当前为高德地图，无法切换模拟风格'); return; }
+      if (!engine.hasMapData()) { ui.toast('离线地图数据未加载，当前区域使用示意地图'); return; }
+      var next = engine.getMapStyle() === 'realistic' ? 'p09' : 'realistic';
+      try { window.localStorage.setItem('bikeapp.mapStyle', next); } catch (e) {}
+      engine.setMapStyle(next);
+      draw();
+      ui.toast(next === 'realistic' ? '已切换为真实地图风格' : '已切换为 P09 仪器风格');
+    }
+
     function renderStatus() {
       var b = state.get().bike;
       statusBar.innerHTML = '';
       var left;
       if (b) {
+        var statusText = b.status;
+        if (b.source === 'bluetooth') {
+          statusText = BleDevice.isConnected()
+            ? (lastDeviceFixAt ? '蓝牙已连接 · GNSS 定位有效' : '蓝牙已连接 · 等待 GNSS 定位')
+            : '蓝牙已断开';
+        }
         left = el('div', { class: 'status-left' }, [
           el('span', { icon: 'bike', text: b.bikeName }),
-          el('span', { class: 'dot ' + (b.status === '在线' ? 'on' : 'off') }),
-          el('span', { class: 'status-text', text: b.source === 'bluetooth' ? (b.status + ' · 蓝牙已连接') : b.status })
+          el('span', { class: 'dot ' + (b.status === '在线' && (b.source !== 'bluetooth' || BleDevice.isConnected()) ? 'on' : 'off') }),
+          el('span', { class: 'status-text', text: statusText })
         ]);
       } else {
         left = el('div', { class: 'status-left' }, [el('span', { icon: 'bike', text: '未连接车辆' })]);
@@ -94,12 +149,14 @@
     }
 
     function draw() {
+      syncBounds();
       var b = state.get().bike;
       engine.clear(); engine.drawBase();
       var ride = state.get().rides.today[0];
       if (ride) engine.drawRoute(ride.segments, ride.points);
       if (b) {
-        engine.drawDirection(YOU, b.position, distanceMeters(YOU, b.position) + ' 米');
+        var me = userSimPos();
+        engine.drawDirection(me, b.position, distanceMeters(me, b.position) + ' 米');
         engine.drawBike(b.position, b.glow && b.glow.active);
       } else {
         engine.drawBike({ x: 500, y: 400 }, false);
@@ -111,73 +168,61 @@
 
     function makeControls() {
       var c = el('div', { class: 'map-controls' }, [
-        (GnssSerial && GnssSerial.isSupported()) ? (gnssButton = el('button', { class: 'mc-btn icon-only', icon: 'signal', text: '电脑GNSS', title: '连接电脑上的 GNSS 模块', 'aria-label': '连接电脑上的 GNSS 模块', onclick: toggleGnss })) : null,
         el('button', { class: 'mc-btn icon-only', icon: 'refresh', text: '刷新位置', title: '刷新位置', 'aria-label': '刷新位置', onclick: function () { locateNow(); } }),
         el('button', { class: 'mc-btn icon-only', icon: 'target', text: '定位车', title: '定位车', 'aria-label': '定位车', onclick: function () {
           var b = state.get().bike;
           if (!b) { ui.toast('尚未连接车辆'); return; }
           engine.centerOn(b.position.x, b.position.y); ui.toast('已回到车的位置');
         } }),
+        el('button', { class: 'mc-btn icon-only', icon: 'compass', text: '看全', title: '显示全部内容', 'aria-label': '显示全部内容', onclick: fitView }),
+        el('button', { class: 'mc-btn icon-only', icon: 'layers', text: '风格', title: '切换地图风格', 'aria-label': '切换地图风格', onclick: toggleMapStyle }),
         el('button', { class: 'mc-btn icon-only', icon: 'plus', text: '放大', title: '放大地图', 'aria-label': '放大地图', onclick: function () { engine.zoomIn(); } }),
         el('button', { class: 'mc-btn icon-only', icon: 'minus', text: '缩小', title: '缩小地图', 'aria-label': '缩小地图', onclick: function () { engine.zoomOut(); } })
       ]);
       return c;
     }
 
-    function setGnssButton(connected) {
-      if (!gnssButton) return;
-      var title = connected ? '断开电脑上的 GNSS 模块' : '连接电脑上的 GNSS 模块';
-      gnssButton.title = window.BikeApp.I18n ? window.BikeApp.I18n.translate(title) : title;
-      gnssButton.setAttribute('aria-label', gnssButton.title);
-      gnssButton.classList.toggle('gnss-connected', !!connected);
+    function applyDevicePosition(geo) {
+      var base;
+      if (isAmap()) {
+        base = engine.base || BASE_GEO;
+      } else {
+        if (!simBaseGeo) simBaseGeo = geo;
+        base = simBase();
+      }
+      var p = AmapAPI.simFromGeo(base, geo.lng, geo.lat);
+      var firstFix = !espHasCentered;
+      espHasCentered = true;
+      lastDeviceFixAt = Date.now();
+      var currentBike = state.get().bike;
+      if (!currentBike || currentBike.source !== 'bluetooth') {
+        state.addBike(currentBike ? currentBike.bikeName : 'ESP32 车辆', p, { source: 'bluetooth' });
+      } else {
+        state.updateBikePosition(p.x, p.y);
+      }
+      if (firstFix) {
+        if (isAmap()) engine.map.setCenter([geo.lng, geo.lat]);
+        else engine.centerOn(p.x, p.y);
+        ui.toast('已收到 ESP32 GNSS 定位');
+      }
     }
 
-    function toggleGnss() {
-      if (!GnssSerial) { ui.toast('当前浏览器不支持电脑串口定位'); return; }
-      if (GnssSerial.isConnected()) {
-        GnssSerial.disconnect().then(function () { setGnssButton(false); });
-        return;
-      }
-      GnssSerial.connect({
-        onStatus: function (message) { ui.toast(message); },
-        onPosition: function (geo) {
-          function applyPosition(mapGeo) {
-            var base = isAmap() ? (engine.base || BASE_GEO) : BASE_GEO;
-            var p = AmapAPI.simFromGeo(base, mapGeo.lng, mapGeo.lat);
-            var firstFix = !gnssHasCentered;
-            if (!state.get().bike) state.addBike('GNSS 测试车', p, { source: 'serial-gnss' });
-            else state.updateBikePosition(p.x, p.y);
-            if (firstFix) {
-              if (isAmap()) engine.map.setCenter([mapGeo.lng, mapGeo.lat]);
-              else engine.centerOn(p.x, p.y);
-              gnssHasCentered = true;
-              var quality = geo.hdop === null ? '' : ' · HDOP ' + geo.hdop.toFixed(1);
-              ui.toast('收到 GNSS 位置：' + geo.lat.toFixed(6) + ', ' + geo.lng.toFixed(6) + quality);
-            }
-            setGnssButton(true);
-          }
-
-          // EC200U reports GPS/WGS-84 coordinates; AMap's base map uses GCJ-02.
-          if (isAmap() && window.AMap && window.AMap.convertFrom) {
-            window.AMap.convertFrom([geo.lng, geo.lat], 'gps', function (status, result) {
-              if (status === 'complete' && result && result.locations && result.locations.length) {
-                var converted = result.locations[0];
-                applyPosition({ lng: converted.getLng(), lat: converted.getLat() });
-              } else {
-                ui.toast('高德坐标转换失败，暂按 GNSS 原始坐标显示');
-                applyPosition(geo);
-              }
-            });
+    function handleDevicePosition(rawGeo) {
+      var geo = { lat: rawGeo.lat, lng: rawGeo.lng };
+      // GNSS 使用 WGS-84；高德底图使用 GCJ-02，沿用原有坐标转换。
+      if (isAmap() && window.AMap && window.AMap.convertFrom) {
+        window.AMap.convertFrom([geo.lng, geo.lat], 'gps', function (status, result) {
+          if (status === 'complete' && result && result.locations && result.locations.length) {
+            var converted = result.locations[0];
+            applyDevicePosition({ lng: converted.getLng(), lat: converted.getLat() });
           } else {
-            applyPosition(geo);
+            ui.toast('高德坐标转换失败，暂按 GNSS 原始坐标显示');
+            applyDevicePosition(geo);
           }
-        }
-      }).then(function () {
-        setGnssButton(true);
-      }).catch(function (error) {
-        setGnssButton(false);
-        ui.toast('GNSS 连接失败：' + (error && error.message ? error.message : '请检查串口'));
-      });
+        });
+      } else {
+        applyDevicePosition(geo);
+      }
     }
 
     function showInfoCard() {
@@ -188,7 +233,7 @@
         el('h3', { text: b.bikeName }),
         el('p', { text: '停放时间：' + Core.formatTime(b.parkedAt) + ' · ' + Core.formatDate(b.parkedAt) }),
         el('p', { text: '位置描述：附近停车场 / 路边（' + (isAmap() ? '高德真实地图' : '模拟') + '）' }),
-        el('p', { text: '距你：' + distanceMeters(YOU, b.position) + ' 米' }),
+        el('p', { text: '距你：' + distanceMeters(userSimPos(), b.position) + ' 米' }),
         el('div', { class: 'modal-actions' }, [
           el('button', { class: 'mini-btn', icon: 'signal', text: '发光', onclick: function () {
             triggerDeviceAction('glow');
@@ -211,7 +256,7 @@
         el('div', { class: 'nav-arrow', icon: 'route' }),
         el('p', { text: '直行 60 米，右转' }),
         el('p', { text: '再直行 120 米，到达停车点' }),
-        el('p', { class: 'nav-target', text: '目标：' + b.bikeName + '（距你 ' + distanceMeters(YOU, b.position) + ' 米）' }),
+        el('p', { class: 'nav-target', text: '目标：' + b.bikeName + '（距你 ' + distanceMeters(userSimPos(), b.position) + ' 米）' }),
         el('button', { class: 'mini-btn primary', icon: 'check', text: '我已到达', onclick: function () { navView.style.display = 'none'; ui.toast('到达，车就在身边'); } }),
         el('button', { class: 'mini-btn close', text: '返回', onclick: function () { navView.style.display = 'none'; } })
       ]));
@@ -242,7 +287,7 @@
             ]),
             el('div', { class: 'vehicle-action-row' }, [
             (bleConnected ? el('button', { class: 'mini-btn', icon: 'unlink', text: '断开蓝牙', onclick: function () {
-              BleDevice.disconnect(); ui.toast('已断开蓝牙连接'); showManage();
+              BleDevice.disconnect(); ui.toast('已断开蓝牙连接'); renderStatus(); showManage();
             } }) : null),
             el('button', { class: 'mini-btn no', icon: 'trash', text: '删除车辆', onclick: function () {
               state.removeBike(); ui.toast('已删除车辆'); showManage(); renderStatus(); renderActionBar(); draw();
@@ -302,9 +347,17 @@
             el('button', { class: 'mini-btn primary', text: '连接设备', onclick: function () {
               var button = card.querySelector('.mini-btn.primary');
               button.disabled = true; button.textContent = '正在连接…';
-              BleDevice.connect(dev.device).then(function () {
-                state.addBike(dev.name, undefined, { source: 'bluetooth' });
-                ui.toast('已连接 ' + dev.name + '，可以测试响铃');
+              BleDevice.connect(dev.device, {
+                onPosition: handleDevicePosition,
+                onDisconnect: function () { renderStatus(); }
+              }).then(function () {
+                espHasCentered = false;
+                lastDeviceFixAt = 0;
+                var currentBike = state.get().bike;
+                if (!currentBike || currentBike.source !== 'bluetooth') {
+                  state.addBike(dev.name, userSimPos(), { source: 'bluetooth' });
+                }
+                ui.toast('已连接 ' + dev.name + '，等待车载 GNSS 定位');
                 connectModal.style.display = 'none';
                 renderStatus(); renderActionBar(); draw();
               }).catch(function (e) {
@@ -363,19 +416,10 @@
           var sy = (e.clientY - rect.top) * (simCanvas.height / rect.height);
           var w = engine.view.screenToWorld(sx, sy);
           var b = state.get().bike;
-          if (b && Core.dist2d(w, b.position) < 20) showInfoCard();
+          var hit = 20 / engine.view.getView().scale;
+          if (b && Core.dist2d(w, b.position) < hit) showInfoCard();
         });
       }
-    }
-
-    // ---- 刷新自行车位置：真实蓝牙设备若提供最新位置则更新，否则保持（本地模拟车） ----
-    function refreshBikeLocation() {
-      var b = state.get().bike;
-      if (!b) return;
-      try {
-        var loc = (BleDevice && BleDevice.currentLocation) ? BleDevice.currentLocation() : null;
-        if (loc && isFinite(loc.x) && isFinite(loc.y)) state.updateBikePosition(loc.x, loc.y);
-      } catch (e) {}
     }
 
     // ---- 统一真实定位：sim/高德都请求定位权限，更新"我的位置"，刷新后保证精确 ----
@@ -389,11 +433,13 @@
             engine.setUserGeo(geo);
             engine.map.setCenter([geo.lng, geo.lat]); // 我的位置蓝点可见
           } else {
-            var p = AmapAPI.simFromGeo(BASE_GEO, geo.lng, geo.lat); // 真实经纬度 → sim 世界坐标
+            if (!simBaseGeo) simBaseGeo = geo; // 首次定位锚定本地坐标原点
+            var p = AmapAPI.simFromGeo(simBase(), geo.lng, geo.lat);
             simEngine.setUserGeo(p);
+            simEngine.setUserAccuracy(pos.coords.accuracy);
             engine.centerOn(p.x, p.y);
+            syncBounds();
           }
-          refreshBikeLocation();
           draw();
           ui.toast('位置已刷新：' + Core.accuracyLabel(pos.coords.accuracy));
         }, function () { ui.toast('定位失败：请检查定位权限或网络'); }, Core.geoOptions());
@@ -402,12 +448,14 @@
 
     // ---- 尝试接入高德真实地图（含真实定位） ----
     function tryAmap() {
+      if (window.location.search.indexOf('sim=1') >= 0) return; // ?sim=1 强制查看模拟地图
       AmapAPI.load(function (ok) {
         if (!ok || !AmapAPI.canUse()) return; // 保持 sim
         var div = el('div', { class: 'amap-box' });
         canvasHolder.innerHTML = ''; canvasHolder.appendChild(div);
-        engine = new AmapEngine(div, { zoom: 15 });
+        engine = new AmapEngine(div, { zoom: 15, base: BASE_GEO });
         engine.kind = 'amap';
+        engine.onRedraw(draw);
         bindClick();
         // 立即以默认基准绘制，定位成功后更新
         var b = state.get().bike; if (b) engine.centerOn(b.position.x, b.position.y);
@@ -435,6 +483,9 @@
     root.appendChild(el('div', { class: 'page find-page' }, [
       statusBar, el('div', { class: 'map-wrap' }, [canvasHolder, makeControls()]), actionBar, infoModal, navView, manageModal, connectModal
     ]));
+
+    simEngine.resize();
+    setInterval(function () { state.expireBikeFx(); }, 1000); // 发光/响铃到期后自动重绘
 
     (function () { var b = state.get().bike; if (b) engine.centerOn(b.position.x, b.position.y); })();
     engine.onRedraw(draw);

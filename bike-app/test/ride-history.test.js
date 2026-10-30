@@ -1,4 +1,4 @@
-/* 问题B — 历史骑行列表数据支撑：多次记录落库（history 保留全部、today 只留最新）、记录字段完整 测试 */
+/* 问题B — 历史骑行列表数据支撑：多次记录落库（history 保留全部、today 聚合当天全部）、记录字段完整 测试 */
 'use strict';
 const { test, eq, ok } = require('./harness');
 const State = require('../js/state');
@@ -10,13 +10,14 @@ function rideOne(st, ts, pts) {
   st.finishRide(ts + pts.length * 60000);
 }
 
-test('多次骑行记录：history 保留全部，today 只留当天最新一条', () => {
+test('多次骑行记录：history 保留全部，today 聚合同一天全部 session', () => {
   const st = fresh();
   rideOne(st, 1000000, [{ x: 0, y: 0, t: 1000000, speedKmh: 18 }, { x: 1, y: 0, t: 1001000, speedKmh: 18 }]);
   rideOne(st, 2000000, [{ x: 0, y: 0, t: 2000000, speedKmh: 18 }, { x: 1, y: 0, t: 2001000, speedKmh: 18 }]);
   eq(st.get().rides.history.length, 2, '历史保留全部');
-  eq(st.get().rides.today.length, 1, 'today 只留最新');
-  eq(st.get().rides.today[0].startedAt, 2000000, 'today 为最新一条');
+  eq(st.get().rides.today.length, 2, 'today 保留当天全部');
+  eq(st.get().rides.today[0].startedAt, 1000000, '第一条仍在');
+  eq(st.get().rides.today[1].startedAt, 2000000, '第二条也在');
 });
 
 test('记录字段完整，可支撑历史详情展示', () => {

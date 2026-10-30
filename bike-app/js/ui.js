@@ -38,7 +38,8 @@
     people: '<circle cx="9" cy="8" r="3"/><path d="M3 20v-1a6 6 0 0 1 12 0v1H3Zm12-12a3 3 0 1 1 2.5 3M18 14a4 4 0 0 1 3 4v2h-3"/>',
     user: '<circle cx="12" cy="8" r="3.5"/><path d="M4 21a8 8 0 0 1 16 0M12 2v2"/>',
     chart: '<path d="M4 20V11m5 9V5m5 15v-7m5 7V3"/><path d="M2 21h20"/>',
-    compass: '<circle cx="12" cy="12" r="9"/><path d="m15.8 8.2-2.5 5.1-5.1 2.5 2.5-5.1 5.1-2.5Z"/>'
+    compass: '<circle cx="12" cy="12" r="9"/><path d="m15.8 8.2-2.5 5.1-5.1 2.5 2.5-5.1 5.1-2.5Z"/>',
+    layers: '<path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/><path d="m3 18 9 5 9-5"/>'
   };
 
   function iconNode(name) {
@@ -132,10 +133,37 @@
     });
   }
 
+  // 上传头像前压缩：最长边限制到 maxSide，避免 base64 撑爆 localStorage。
+  function compressImage(dataUrl, maxSide, cb) {
+    var img = new Image();
+    img.onload = function () {
+      var scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+      if (scale >= 1) { cb(dataUrl); return; }
+      var canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(img.width * scale));
+      canvas.height = Math.max(1, Math.round(img.height * scale));
+      var ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      try { cb(canvas.toDataURL('image/jpeg', 0.82)); }
+      catch (e) { cb(dataUrl); }
+    };
+    img.onerror = function () { cb(dataUrl); };
+    img.src = dataUrl;
+  }
+
   // 真实定位隐私授权：已同意则直接回调 true；未同意弹说明框，由用户选择。
+  // 同一时间只允许一个弹窗，后续请求排队，避免 locateNow/tryAmap 叠加两个框。
+  var privacyOpen = false;
+  var privacyPending = [];
+
   function confirmPrivacy(cb) {
     var Privacy = window.BikeApp.Privacy;
     if (Privacy.consented(localStorage)) { cb(true); return; }
+    if (privacyOpen) { privacyPending.push(cb); return; }
+
+    privacyOpen = true;
     var mask = el('div', { class: 'modal-mask', style: 'display:flex;' });
     var card = el('div', { class: 'modal-card privacy-card' }, [
       el('h3', { icon: 'privacy', text: '定位与隐私说明' }),
@@ -149,18 +177,23 @@
       el('div', { class: 'modal-actions' }, [
         el('button', { class: 'mini-btn primary', text: '同意并继续', onclick: function () {
           Privacy.grant(localStorage);
-          if (mask.parentNode) mask.parentNode.removeChild(mask);
-          cb(true);
+          finish(true);
         } }),
         el('button', { class: 'mini-btn', text: '暂不授权', onclick: function () {
-          if (mask.parentNode) mask.parentNode.removeChild(mask);
-          cb(false);
+          finish(false);
         } })
       ])
     ]);
+    function finish(ok) {
+      privacyOpen = false;
+      if (mask.parentNode) mask.parentNode.removeChild(mask);
+      cb(ok);
+      var pending = privacyPending.splice(0);
+      pending.forEach(function (fn) { fn(ok); });
+    }
     mask.appendChild(card);
     document.body.appendChild(mask);
   }
 
-  window.BikeApp.ui = { el: el, icon: iconNode, toast: toast, avatarNode: avatarNode, PRESET_PORTRAITS: PRESET_PORTRAITS, confirmPrivacy: confirmPrivacy };
+  window.BikeApp.ui = { el: el, icon: iconNode, toast: toast, avatarNode: avatarNode, PRESET_PORTRAITS: PRESET_PORTRAITS, confirmPrivacy: confirmPrivacy, compressImage: compressImage };
 })();

@@ -4,7 +4,6 @@
   if (typeof window === 'undefined' || !window.BikeApp) return;
   var Core = window.BikeApp.Core, ui = window.BikeApp.ui, el = ui.el;
   var Backup = window.BikeApp.Backup;
-  var Login = window.BikeApp.Login;
   var I18n = window.BikeApp.I18n;
 
   function create(store, root) {
@@ -51,10 +50,9 @@
       var menu = el('div', { class: 'p09-menu' });
       [
         ['01', '个人资料与头像', 'edit'],
-        ['02', '游客 / 微信登录', 'login'],
-        ['03', '我的车辆', 'bike'],
-        ['04', '应用语言', 'language'],
-        ['05', '数据备份 / 恢复', 'backup']
+        ['02', '我的车辆', 'bike'],
+        ['03', '应用语言', 'language'],
+        ['04', '数据备份 / 恢复', 'backup']
       ].forEach(function (item) {
         menu.appendChild(el('button', {
           class: 'p09-menu-item' + (activePanel === item[2] ? ' selected' : ''),
@@ -72,7 +70,6 @@
       });
       content.appendChild(menu);
 
-      if (activePanel === 'login') renderLoginPanel();
       if (activePanel === 'language') renderLanguagePanel();
       if (activePanel === 'backup') renderBackupPanel();
     }
@@ -84,20 +81,6 @@
           el('button', { type: 'button', class: 'p09-back', text: '返回档案', onclick: function () { activePanel = null; renderProfile(); } })
         ])
       ].concat(children));
-    }
-
-    function renderLoginPanel() {
-      var lg = Login.current(window.localStorage);
-      content.appendChild(panelCard('登录方式', [
-        el('p', { class: 'row-sub', text: lg.mode === 'wechat' ? ('微信用户：' + lg.wechatNick) : '当前：游客访问' }),
-        el('div', { class: 'modal-actions' }, [
-          lg.mode === 'wechat'
-            ? el('button', { class: 'mini-btn', icon: 'refresh', text: '切换为游客', onclick: function () {
-                Login.loginGuest(window.localStorage); ui.toast('已切换为游客访问'); renderProfile();
-              } })
-            : el('button', { class: 'mini-btn primary', text: '微信登录', onclick: showWechatLogin })
-        ])
-      ]));
     }
 
     function renderLanguagePanel() {
@@ -120,26 +103,6 @@
         ]),
         fileInput
       ]));
-    }
-
-    // 微信登录（本地版模拟授权；真实微信登录需配置开放平台 AppID 与服务端）
-    function showWechatLogin() {
-      var mask = el('div', { class: 'modal-mask', style: 'display:flex;' });
-      var nick = el('input', { type: 'text', value: '微信用户' });
-      function close() { if (mask.parentNode) mask.parentNode.removeChild(mask); }
-      mask.appendChild(el('div', { class: 'modal-card' }, [
-        el('h3', { text: '微信登录' }),
-        el('p', { class: 'privacy-note', text: '本地版为模拟微信授权，登录信息仅保存在本机；真实微信登录需配置微信开放平台 AppID 与服务端。' }),
-        field('微信昵称', nick),
-        el('div', { class: 'modal-actions' }, [
-          el('button', { class: 'mini-btn primary', text: '授权登录', onclick: function () {
-            Login.loginWechat(window.localStorage, nick.value.trim() || '微信用户');
-            close(); ui.toast('已通过微信登录'); redraw();
-          } }),
-          el('button', { class: 'mini-btn close', text: '取消', onclick: close })
-        ])
-      ]));
-      document.body.appendChild(mask);
     }
 
     var fileInput = el('input', { type: 'file', accept: '.json', style: 'display:none;' });
@@ -199,7 +162,13 @@
       upInput.addEventListener('change', function () {
         var f = upInput.files[0]; if (!f) return;
         var r = new FileReader();
-        r.onload = function () { window.BikeApp.avatarApi.uploadAvatarAs(r.result); ui.toast('头像已上传'); renderEdit(); };
+        r.onload = function () {
+          ui.compressImage(r.result, 256, function (dataUrl) {
+            window.BikeApp.avatarApi.uploadAvatarAs(dataUrl);
+            ui.toast('头像已上传');
+            renderEdit();
+          });
+        };
         r.readAsDataURL(f);
         upInput.value = '';
       });

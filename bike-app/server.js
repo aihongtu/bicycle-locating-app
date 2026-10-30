@@ -22,15 +22,49 @@ const MIME = {
   '.txt': 'text/plain; charset=utf-8', '.md': 'text/markdown; charset=utf-8'
 };
 
+// 静态资源黑名单：私钥、私有配置、备份、日志一律不通过 HTTP 提供。
+// 注意：js/amap-config.local.js 是浏览器端必须加载的高德配置，不能拦截；
+// 高德 Key 本身是客户端可见的，应在高德控制台限制允许的来源域名。
+const DENY_PREFIXES = ['/certs/', '/.git/'];
+const DENY_FILES = new Set(['/project.private.config.json']);
+const DENY_EXT = /\.(pem|key|bak|log)$/i;
+
+function isBlockedPath(p) {
+  if (p.indexOf('\\') >= 0 || p.indexOf('\0') >= 0) return true; // URL 不需要反斜杠/空字节
+  if (DENY_PREFIXES.some(function (x) { return p.indexOf(x) === 0; })) return true;
+  if (DENY_FILES.has(p)) return true;
+  if (DENY_EXT.test(p)) return true;
+  return /(^|\/)\./.test(p); // 拒绝点文件/点目录
+}
+
 function handler(req, res) {
-  let p = decodeURIComponent(req.url.split('?')[0]);
+  let p;
+  try {
+    p = decodeURIComponent(req.url.split('?')[0]);
+  } catch (e) {
+    res.writeHead(400); return res.end('400 Bad Request');
+  }
   if (p === '/' || p === '') p = '/index.html';
-  const fp = path.normalize(path.join(root, p));
-  if (fp.indexOf(root) !== 0) { res.writeHead(403); return res.end('403'); }
+  // 黑名单基于规范化后的 URL 路径判断，防止 /js/./amap-config.local.js 这类绕过。
+  const checkPath = path.posix.normalize(p.charAt(0) === '/' ? p : '/' + p);
+  if (isBlockedPath(checkPath)) { res.writeHead(404); return res.end('404 Not Found'); }
+
+  const fp = path.resolve(root, '.' + p);
+  const rel = path.relative(root, fp);
+  if (!rel || rel.startsWith('..') || path.isAbsolute(rel)) {
+    res.writeHead(403); return res.end('403');
+  }
+
   fs.readFile(fp, function (err, data) {
     if (err) { res.writeHead(404); return res.end('404 Not Found'); }
     const ext = path.extname(fp).toLowerCase();
-    res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream' });
+    const noCache = ext === '.html' || ext === '.js' || ext === '.css';
+    res.writeHead(200, {
+      'Content-Type': MIME[ext] || 'application/octet-stream',
+      'X-Content-Type-Options': 'nosniff',
+      'Referrer-Policy': 'no-referrer',
+      'Cache-Control': noCache ? 'no-cache' : 'public, max-age=3600'
+    });
     res.end(data);
   });
 }
@@ -46,7 +80,8 @@ if (fs.existsSync(certPath) && fs.existsSync(keyPath)) {
   try {
     https.createServer({
       key: fs.readFileSync(keyPath),
-      cert: fs.readFileSync(certPath)
+      cert: fs.readFileSync(certPath),
+      minVersion: 'TLSv1.2'
     }, handler).listen(httpsPort, function () {
       console.log('HTTPS 已启动: https://localhost:' + httpsPort + '  （自签名证书，供局域网/VPN 设备访问启用定位与蓝牙）');
     });
